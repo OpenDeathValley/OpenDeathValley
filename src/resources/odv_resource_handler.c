@@ -48,13 +48,12 @@ int odv_resource_read_header(struct ODVResourceFile *rfile)
     return 1;
 }
 
-int odv_resource_get_type_index(struct ODVResourceFile *rfile, unsigned int index)
+/*int odv_resource_get_type_index(struct ODVResourceFile *rfile, unsigned int index)
 {
     if (rfile == NULL)
         return 0;
-
     return 1;
-}
+}*/
 
 void odv_resource_close(struct ODVResourceFile *rfile)
 {

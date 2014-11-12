@@ -18,7 +18,7 @@
 struct ODVFile
 {
     char filename[FILENAME_MAX];
-    unsigned char *buf;
+    char *buf;
     unsigned int length;
     unsigned int pos;
 
@@ -30,7 +30,7 @@ struct ODVFile
 #endif
 };
 
-struct ODVFile *odv_file_open(char *filename);
+struct ODVFile *odv_file_open(const char *filename);
 void odv_file_info(struct ODVFile *file);
 int odv_file_read(struct ODVFile *file, void *buf, size_t count);
 int odv_file_readline(struct ODVFile *file, char *buf, size_t count);

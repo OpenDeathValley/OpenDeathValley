@@ -2,13 +2,13 @@
 
 #ifdef WINDOWS
 
-struct ODVFile *odv_file_open(char *filename)
+struct ODVFile *odv_file_open(const char *filename)
 {
     struct ODVFile *file = NULL;
 
     if (filename == NULL)
         return NULL;
-    file = (struct ODVFile*)malloc(sizeof (struct ODVFile));
+    file = malloc(sizeof (struct ODVFile));
     if (file == NULL) {
         fprintf(stderr, "[-] odv_file_open - malloc failed\n");
         return NULL;
@@ -42,14 +42,14 @@ struct ODVFile *odv_file_open(char *filename)
 
 #else
 
-struct ODVFile *odv_file_open(char *filename)
+struct ODVFile *odv_file_open(const char *filename)
 {
     struct ODVFile *file = NULL;
 	struct stat st;
 
     if (filename == NULL)
         return NULL;
-    file = (struct ODVFile*)malloc(sizeof (struct ODVFile));
+    file = malloc(sizeof (struct ODVFile));
     if (file == NULL) {
         fprintf(stderr, "[-] odv_file_open - malloc failed\n");
         return NULL;
@@ -102,13 +102,13 @@ int odv_file_read(struct ODVFile *file, void *buf, size_t count)
 int odv_file_readline(struct ODVFile *file, char *buf, size_t count)
 {
     size_t length;
-    unsigned char *newline = NULL;
+    char *newline = NULL;
 
     if (buf == NULL)
         return 0;
     if (file->pos > file->length)
         return 0;
-    newline = strchr(file->buf + file->pos, 0x0A);
+    newline = strchr((const char*)(file->buf + file->pos), 0x0A);
     if (newline == NULL)
         return 0;
     length = (newline + 1) - (file->buf + file->pos);
