@@ -136,8 +136,8 @@ int odv_file_close(struct ODVFile *file)
     CloseHandle(file->map);
     UnmapViewOfFile(file->buf);
 #else
-	munmap(file->buf, file->length);
-	close(file->fd);
+    munmap(file->buf, file->length);
+    close(file->fd);
 #endif
 	free(file);
     return 1;
@@ -153,7 +153,7 @@ int odv_file_close(struct ODVFile *file)
     return 1;
 }*/
 
-void odv_file_info(struct ODVFile *file)
+void odv_file_info(const struct ODVFile *file)
 {
     if (file == NULL)
         return;

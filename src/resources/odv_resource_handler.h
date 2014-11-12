@@ -38,7 +38,7 @@ struct ODVResourceFile
     struct ODVResourceType **type;
 };
 
-struct ODVResourceFile *odv_resource_open(char *filename);
+struct ODVResourceFile *odv_resource_open(const char *filename);
 int odv_resource_read_header(struct ODVResourceFile *rfile);
 void odv_resource_close(struct ODVResourceFile *rfile);
 
@@ -46,8 +46,8 @@ int odv_resource_get_type_index(struct ODVResourceFile *rfile, unsigned int inde
 
 /* INFO / DBG */
 
-void odv_resource_info(struct ODVResourceFile *rfile);
-void odv_resource_headerinfo(struct ODVResourceHeader *re);
-void odv_resourcetype_headerinfo(struct ODVResourceTypeHeader *re);
+void odv_resource_info(const struct ODVResourceFile *rfile);
+void odv_resource_headerinfo(const struct ODVResourceHeader *re);
+void odv_resourcetype_headerinfo(const struct ODVResourceTypeHeader *re);
 
 #endif /* OPENDV_RESSOURCE_MANAGER_H */

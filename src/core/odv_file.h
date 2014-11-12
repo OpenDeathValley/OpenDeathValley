@@ -31,7 +31,8 @@ struct ODVFile
 };
 
 struct ODVFile *odv_file_open(const char *filename);
-void odv_file_info(struct ODVFile *file);
+void odv_file_info(const struct ODVFile *file);
+
 int odv_file_read(struct ODVFile *file, void *buf, size_t count);
 int odv_file_readline(struct ODVFile *file, char *buf, size_t count);
 void odv_file_seek(struct ODVFile *file, unsigned int offset);

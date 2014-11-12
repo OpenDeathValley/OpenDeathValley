@@ -1,6 +1,6 @@
 #include "odv_resource_handler.h"
 
-struct ODVResourceFile *odv_resource_open(char *filename)
+struct ODVResourceFile *odv_resource_open(const char *filename)
 {
     struct ODVFile *file = NULL;
     struct ODVResourceFile *rfile = NULL;
@@ -73,7 +73,7 @@ void odv_resource_close(struct ODVResourceFile *rfile)
     free(rfile);
 }
 
-void odv_resource_info(struct ODVResourceFile *rfile)
+void odv_resource_info(const struct ODVResourceFile *rfile)
 {
     if (rfile == NULL)
         return;
@@ -81,7 +81,7 @@ void odv_resource_info(struct ODVResourceFile *rfile)
     odv_resource_headerinfo(&rfile->header);
 }
 
-void odv_resource_headerinfo(struct ODVResourceHeader *re)
+void odv_resource_headerinfo(const struct ODVResourceHeader *re)
 {
     if (re == NULL)
         return;
@@ -92,7 +92,7 @@ void odv_resource_headerinfo(struct ODVResourceHeader *re)
     printf("[-----------------------------------]\n");
 }
 
-void odv_resourcetype_headerinfo(struct ODVResourceTypeHeader *re)
+void odv_resourcetype_headerinfo(const struct ODVResourceTypeHeader *re)
 {
     if (re == NULL)
         return;
