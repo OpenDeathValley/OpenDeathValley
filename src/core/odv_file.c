@@ -139,7 +139,7 @@ int odv_file_close(struct ODVFile *file)
     munmap(file->buf, file->length);
     close(file->fd);
 #endif
-	free(file);
+    free(file);
     return 1;
 }
 
