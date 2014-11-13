@@ -15,8 +15,8 @@ void odv_test_resource(const char *filename)
 void odv_test_script(const char *filename)
 {
     struct ODVSCBFile *sfile = NULL;
-    struct ODVSCBClass *class = NULL;
-    struct ODVSCBFunction *func = NULL;
+    const struct ODVSCBClass *class = NULL;
+    const struct ODVSCBFunction *func = NULL;
 
     fprintf(stderr, "[+] odv_scb_open = %s\n", filename);
     sfile = odv_scb_open(filename);
