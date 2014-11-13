@@ -57,4 +57,7 @@ void odv_scb_info(const struct ODVSCBFile *sfile);
 void odv_scb_class_info(const struct ODVSCBClass *class);
 void odv_scb_function_info(const struct ODVSCBFunction *func);
 
+void odv_scb_clean_function(struct ODVSCBFunction *function);
+void odv_scb_clean_class(struct ODVSCBClass *class);
+
 #endif /* OPENDV_SCB_HANDLER_H */
