@@ -51,6 +51,7 @@ void odv_scb_close(struct ODVSCBFile *sfile);
 int odv_scb_parse_header(struct ODVSCBFile *sfile);
 struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile);
 struct ODVSCBFunction *odv_scb_parse_function(struct ODVSCBFile *sfile);
+int odv_scb_parse_quad(struct ODVSCBFile *sfile, struct ODVSCBClass *class);
 
 void odv_scb_info(const struct ODVSCBFile *sfile);
 void odv_scb_class_info(const struct ODVSCBClass *class);

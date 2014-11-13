@@ -12,7 +12,7 @@ struct ODVSCBFile *odv_scb_open(const char *filename)
         fprintf(stderr, "[-] odv_scb_open - odv_file_open failed\n");
         return NULL;
     }
-    sfile = (struct ODVSCBFile*)malloc(sizeof (struct ODVSCBFile));
+    sfile = malloc(sizeof (struct ODVSCBFile));
     if (sfile == NULL) {
         fprintf(stderr, "[-] odv_scb_open - malloc failed\n");
         odv_file_close(file);
@@ -21,213 +21,25 @@ struct ODVSCBFile *odv_scb_open(const char *filename)
     memset(sfile, 0, sizeof (struct ODVSCBFile));
     sfile->file = file;
     if (odv_scb_parse_header(sfile) == 0) {
-        odv_file_close(sfile->file);
-        free(sfile);
+        odv_scb_close(sfile);
         return NULL;
     }
-    sfile->classes = (struct ODVSCBClass**)malloc(sizeof(struct ODVSCBClass*) * sfile->nbclasses);
+    sfile->classes = malloc(sizeof(struct ODVSCBClass*) * sfile->nbclasses);
     if (sfile->classes == NULL) {
         fprintf(stderr, "[-] odv_scb_open - malloc failed\n");
-        odv_file_close(sfile->file);
-        free(sfile);
+        odv_scb_close(sfile);
         return NULL;
     }
     memset(sfile->classes, 0, sizeof(struct ODVSCBClass*) * sfile->nbclasses);
     for (i = 0; i < sfile->nbclasses; i++) {
         class = odv_scb_parse_class(sfile);
         if (class == NULL) {
-            odv_file_close(sfile->file);
-            free(sfile);
-            /* TODO: free all previous one */
+            odv_scb_close(sfile);
             return NULL;
         }
         sfile->classes[i] = class;
     }
     return sfile;
-}
-
-struct ODVSCBFunction *odv_scb_parse_function(struct ODVSCBFile *sfile)
-{
-    struct ODVSCBFunction *func = NULL;
-    char line[1024];
-    /*
-    char functionname[1024];
-    unsigned int address;
-    unsigned int nbofparams;
-    unsigned int sizeofretval;
-    unsigned int sizeofparams;
-    unsigned int sizeofvolatile;
-    unsigned int sizeoftempor;
-    unsigned int nbofvariables;
-    */
-
-    func = (struct ODVSCBFunction*)malloc(sizeof (struct ODVSCBFunction));
-    if (func == NULL) {
-        fprintf(stderr, "[-] odv_scb_parse_function - malloc failed\n");
-        return NULL;
-    }
-    memset(func, 0, sizeof (struct ODVSCBFunction));
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        free(func);
-        return NULL;
-    }
-    sscanf(line, "functionName %1023s , address %d, nbOfParams %d, sizeOfRetVal %d, sizeOfParams %d\n",
-        func->functionname, &func->address, &func->nbofparams, &func->sizeofretval, &func->sizeofparams);
-    /* printf("functionname: %s\n", func->functionname);
-    printf("address     : %d\n", func->address);
-    printf("nbofparams  : %d\n", func->nbofparams);
-    printf("sizeofretval: %d\n", func->sizeofretval);
-    printf("sizeofparams: %d\n", func->sizeofparams); */
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        free(func);
-        return NULL;
-    }
-    /* "functionParameters\n" */
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        free(func);
-        return NULL;
-    }
-    /* "\n" */
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        free(func);
-        return NULL;
-    }
-    sscanf(line, " sizeOfVolatile %d, sizeOfTempor %d\n", &func->sizeofvolatile, &func->sizeoftempor);
-    /* printf("sizeofvolatile: %d\n", func->sizeofvolatile);
-    printf("sizeoftempor  : %d\n", func->sizeoftempor);
-    "nbOfVariables %d\n" */
-    return func;
-}
-
-struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
-{
-    char line[1024];
-    /*char filename[1024];
-    char classname[1024];
-    unsigned int nbofvariables;
-    unsigned int sizeofvariables;
-    unsigned int nboffunctions;
-    unsigned int nbofquads;*/
-    struct ODVSCBClass *class = NULL;
-    struct ODVSCBFunction *func = NULL;
-    int i;
-
-    int numberofbytesread;
-
-    /* unsigned char unk_byte_00;
-    unsigned long long unk_qword_00; */
-
-    int nbofquads = 0;
-    int nbofquadsread = 0;
-
-    if (sfile == NULL || sfile->file == NULL)
-        return 0;
-    class = (struct ODVSCBClass*)malloc(sizeof (struct ODVSCBClass));
-    if (class == NULL) {
-        fprintf(stderr, "[-] odv_scb_parse_class - malloc failed\n");
-        return NULL;
-    }
-    memset(class, 0, sizeof (struct ODVSCBClass));
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        return 0;
-    }
-    sscanf(line, "fileName %1023s , className %1023s\n", class->filename, class->classname);
-    /* printf("filename : %s\n", class->filename);
-    printf("classname: %s\n", class->classname); */
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        return 0;
-    }
-    sscanf(line, "nbOfVariables %d, sizeOfVariables %d\n", &class->nbofvariables, &class->sizeofvariables);
-    /* printf("nbofvariables : %d\n", class->nbofvariables);
-    printf("sizeofvariables: %d\n", class->sizeofvariables); */
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        return 0;
-    }
-    sscanf(line, "nbOfFunctions %d\n", &class->nboffunctions);
-    /* printf("nboffunctions: %d\n", class->nboffunctions); */
-
-    class->funcs = (struct ODVSCBFunction**)malloc(sizeof(struct ODVSCBFunction*) * class->nboffunctions);
-    if (class->funcs == NULL) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - malloc failed\n");
-        free(class);
-        return NULL;
-    }
-
-    for (i = 0; i < class->nboffunctions; i++) {
-        func = odv_scb_parse_function(sfile);
-        if (func == NULL) {
-            /* TODO: free all previous one */
-            free(class);
-            return NULL;
-        }
-        class->funcs[i] = func;
-    }
-
-    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
-        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-        return 0;
-    }
-    sscanf(line, "nbOfQuads %d\n", &class->nbofquads);
-    /* printf("nbofquads : %d\n", class->nbofquads); */
-    for (i = 0; i < class->nboffunctions; i++) {
-        if (i != (class->nboffunctions - 1)) {
-            nbofquads = class->funcs[i + 1]->address - class->funcs[i]->address;
-            /* printf("nbofquads: %d\n", nbofquads); */
-            class->funcs[i]->nbofquads = nbofquads;
-            class->funcs[i]->bytecode = malloc((sizeof (char) * nbofquads) * 10);
-            if (class->funcs[i]->bytecode == NULL) {
-                fprintf(stderr, "[-] odv_scb_parse_classes - malloc failed\n");
-                /* TODO: clean everything */
-                return NULL;
-            }
-            numberofbytesread = odv_file_read(sfile->file, class->funcs[i]->bytecode, 10 * nbofquads);
-            if (numberofbytesread != 10 * nbofquads) {
-                fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-                return NULL;
-            }
-            nbofquadsread += nbofquads;
-        }
-        else {
-            nbofquads = class->nbofquads - nbofquadsread;
-            /* printf("nbofquads: %d\n", nbofquads); */
-            class->funcs[i]->nbofquads = nbofquads;
-            class->funcs[i]->bytecode = malloc((sizeof (char) * nbofquads) * 10);
-            if (class->funcs[i]->bytecode == NULL) {
-                fprintf(stderr, "[-] odv_scb_parse_classes - malloc failed\n");
-                /* TODO: clean everything */
-                return NULL;
-            }
-            numberofbytesread = odv_file_read(sfile->file, class->funcs[i]->bytecode, 10 * nbofquads);
-            if (numberofbytesread != 10 * nbofquads) {
-                fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-                return NULL;
-            }
-        }
-
-    }
-    /* for (i = 0; i < class->nbofquads; i++) {
-        numberofbytesread = odv_file_read(sfile->file, &unk_byte_00, 1);
-        if (numberofbytesread != 1) {
-            fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-            return 0;
-        }
-        printf("unk_byte_00  : 0x%02X\n", unk_byte_00);
-        numberofbytesread = odv_file_read(sfile->file, &unk_qword_00, 8);
-        if (numberofbytesread != 8) {
-            fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
-            return 0;
-        }
-        printf("unk_qword_00 : 0x%016llX\n", unk_qword_00);
-        sfile->file->pos += 1;
-    } */
-    return class;
 }
 
 int odv_scb_parse_header(struct ODVSCBFile *sfile)
@@ -253,6 +65,154 @@ int odv_scb_parse_header(struct ODVSCBFile *sfile)
     return 1;
 }
 
+struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
+{
+    char line[1024];
+    struct ODVSCBClass *class = NULL;
+    struct ODVSCBFunction *func = NULL;
+    int i;
+
+    if (sfile == NULL || sfile->file == NULL)
+        return 0;
+    class = malloc(sizeof (struct ODVSCBClass));
+    if (class == NULL) {
+        fprintf(stderr, "[-] odv_scb_parse_class - malloc failed\n");
+        return NULL;
+    }
+    memset(class, 0, sizeof (struct ODVSCBClass));
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        free(class);
+        return NULL;
+    }
+    sscanf(line, "fileName %1023s , className %1023s\n", class->filename, class->classname);
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        free(class);
+        return NULL;
+    }
+    sscanf(line, "nbOfVariables %d, sizeOfVariables %d\n", &class->nbofvariables, &class->sizeofvariables);
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        free(class);
+        return NULL;
+    }
+    sscanf(line, "nbOfFunctions %d\n", &class->nboffunctions);
+    class->funcs = malloc(sizeof(struct ODVSCBFunction*) * class->nboffunctions);
+    if (class->funcs == NULL) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - malloc failed\n");
+        free(class);
+        return NULL;
+    }
+    for (i = 0; i < class->nboffunctions; i++) {
+        func = odv_scb_parse_function(sfile);
+        if (func == NULL) {
+            free(class);
+            return NULL;
+        }
+        class->funcs[i] = func;
+    }
+    if (odv_scb_parse_quad(sfile, class) == 0) {
+        free(class);
+        return NULL;
+    }
+    return class;
+}
+
+struct ODVSCBFunction *odv_scb_parse_function(struct ODVSCBFile *sfile)
+{
+    struct ODVSCBFunction *func = NULL;
+    char line[1024];
+
+    func = malloc(sizeof (struct ODVSCBFunction));
+    if (func == NULL) {
+        fprintf(stderr, "[-] odv_scb_parse_function - malloc failed\n");
+        return NULL;
+    }
+    memset(func, 0, sizeof (struct ODVSCBFunction));
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        free(func);
+        return NULL;
+    }
+    sscanf(line, "functionName %1023s , address %d, nbOfParams %d, sizeOfRetVal %d, sizeOfParams %d\n",
+        func->functionname, &func->address, &func->nbofparams, &func->sizeofretval, &func->sizeofparams);
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        free(func);
+        return NULL;
+    }
+    /* "functionParameters\n" */
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        free(func);
+        return NULL;
+    }
+    /* "\n" */
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        free(func);
+        return NULL;
+    }
+    sscanf(line, " sizeOfVolatile %d, sizeOfTempor %d\n", &func->sizeofvolatile, &func->sizeoftempor);
+    /* "nbOfVariables %d\n" */
+    return func;
+}
+
+int odv_scb_parse_quad(struct ODVSCBFile *sfile, struct ODVSCBClass *class)
+{
+    char line[1024];
+    int i;
+    int numberofbytesread;
+    int nbofquads = 0;
+    int nbofquadsread = 0;
+
+    if (sfile == NULL || sfile->file == NULL || class == NULL)
+        return 0;
+
+    if (odv_file_readline(sfile->file, line, sizeof (line) - 1) == 0) {
+        fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+        return 0;
+    }
+    sscanf(line, "nbOfQuads %d\n", &class->nbofquads);
+    for (i = 0; i < class->nboffunctions; i++) {
+        if (i != (class->nboffunctions - 1)) {
+            nbofquads = class->funcs[i + 1]->address - class->funcs[i]->address;
+            class->funcs[i]->nbofquads = nbofquads;
+            class->funcs[i]->bytecode = malloc((sizeof (char) * nbofquads) * 10);
+            if (class->funcs[i]->bytecode == NULL) {
+                fprintf(stderr, "[-] odv_scb_parse_classes - malloc failed\n");
+                return 0;
+            }
+            numberofbytesread = odv_file_read(sfile->file, class->funcs[i]->bytecode, 10 * nbofquads);
+            if (numberofbytesread != 10 * nbofquads) {
+                free(class->funcs[i]->bytecode);
+                class->funcs[i]->bytecode = NULL;
+                fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+                return 0;
+            }
+            nbofquadsread += nbofquads;
+        }
+        else {
+            nbofquads = class->nbofquads - nbofquadsread;
+            class->funcs[i]->nbofquads = nbofquads;
+            class->funcs[i]->bytecode = malloc((sizeof (char) * nbofquads) * 10);
+            if (class->funcs[i]->bytecode == NULL) {
+                fprintf(stderr, "[-] odv_scb_parse_classes - malloc failed\n");
+                return 0;
+            }
+            numberofbytesread = odv_file_read(sfile->file, class->funcs[i]->bytecode, 10 * nbofquads);
+            if (numberofbytesread != 10 * nbofquads) {
+                free(class->funcs[i]->bytecode);
+                class->funcs[i]->bytecode = NULL;
+                fprintf(stderr, "[-] odv_scb_parse_classes - odv_file_readline failed\n");
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 void odv_scb_info(const struct ODVSCBFile *sfile)
 {
     int i;
@@ -264,9 +224,9 @@ void odv_scb_info(const struct ODVSCBFile *sfile)
     printf("version     : %f\n", sfile->version);
     printf("debug       : %d\n", sfile->debug);
     printf("nbOfClasses : %d (0x%08X)\n", sfile->nbclasses, sfile->nbclasses);
-    if (sfile->classes) {
+    if (sfile->classes != NULL) {
         for (i = 0; i < sfile->nbclasses; i++) {
-            if (sfile->classes[i])
+            if (sfile->classes[i] != NULL)
                 odv_scb_class_info(sfile->classes[i]);
         }
     }
@@ -307,11 +267,38 @@ void odv_scb_class_info(const struct ODVSCBClass *class)
     printf("nbofvariables: %d\n", class->nbofvariables);
     printf("nboffunctions: %d\n", class->nboffunctions);
     printf("nbofquads: %d\n", class->nbofquads);
-    if (class->funcs) {
+    if (class->funcs != NULL) {
         for (i = 0; i < class->nboffunctions; i++) {
-            if (class->funcs[i])
+            if (class->funcs[i] != NULL)
                 odv_scb_function_info(class->funcs[i]);
         }
+    }
+}
+
+void odv_scb_clean_function(struct ODVSCBFunction *function)
+{
+    if (function == NULL)
+        return;
+    if (function->bytecode != NULL) {
+        free(function->bytecode);
+        function->bytecode = NULL;
+    }
+}
+
+void odv_scb_clean_class(struct ODVSCBClass *class)
+{
+    int i;
+
+    if (class == NULL)
+        return;
+    if (class->funcs != NULL) {
+        for (i = 0; i < class->nboffunctions; i++) {
+            if (class->funcs[i] != NULL) {
+                odv_scb_clean_function(class->funcs[i]);
+                class->funcs[i] = NULL;
+            }
+        }
+        free(class->funcs);
     }
 }
 
@@ -323,11 +310,11 @@ void odv_scb_close(struct ODVSCBFile *sfile)
         return;
     if (sfile->file != NULL)
         odv_file_close(sfile->file);
-    /* TODO: more clean */
-    if (sfile->classes) {
+    if (sfile->classes != NULL) {
         for (i = 0; i < sfile->nbclasses; i++) {
-            if (sfile->classes[i]) {
-                free(sfile->classes[i]);
+            if (sfile->classes[i] != NULL) {
+                odv_scb_clean_class(sfile->classes[i]);
+                sfile->classes[i] = NULL;
             }
         }
         free(sfile->classes);
