@@ -283,6 +283,7 @@ void odv_scb_clean_function(struct ODVSCBFunction *function)
         free(function->bytecode);
         function->bytecode = NULL;
     }
+    free(function);
 }
 
 void odv_scb_clean_class(struct ODVSCBClass *class)
@@ -299,7 +300,9 @@ void odv_scb_clean_class(struct ODVSCBClass *class)
             }
         }
         free(class->funcs);
+        class->funcs = NULL;
     }
+    free(class);
 }
 
 void odv_scb_close(struct ODVSCBFile *sfile)
@@ -318,6 +321,7 @@ void odv_scb_close(struct ODVSCBFile *sfile)
             }
         }
         free(sfile->classes);
+        sfile->classes = NULL;
     }
     free(sfile);
 }
