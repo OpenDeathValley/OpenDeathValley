@@ -108,7 +108,7 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_0 = sval_0 & 0x3FFF;
             printf("%08X: ", addr);
             odv_scb_print_opcode_bytes(buf);
-            printf("\t0x02 - sval_0: 0x%04X ; ");
+            printf("\t0x02 - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf("\n");
             break;
