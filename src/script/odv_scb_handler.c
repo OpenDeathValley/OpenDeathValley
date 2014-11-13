@@ -234,6 +234,32 @@ int odv_scb_parse_quad(struct ODVSCBFile *sfile, struct ODVSCBClass *class)
     return 1;
 }
 
+struct ODVSCBClass *odv_scb_get_class_byname(const struct ODVSCBFile *sfile, const char *classname)
+{
+    int i;
+
+    if (sfile == NULL || sfile->classes == NULL)
+        return NULL;
+    for (i = 0; i < sfile->nbclasses; i++) {
+        if (sfile->classes[i] && !strcmp(sfile->classes[i]->classname, classname))
+            return sfile->classes[i];
+    }
+    return NULL;
+}
+
+struct ODVSCBFunction *odv_scb_get_function_byname(const struct ODVSCBClass *class, const char *functionname)
+{
+    int i;
+
+    if (class == NULL || class->funcs == NULL)
+        return NULL;
+    for (i = 0; i < class->nboffunctions; i++) {
+        if (class->funcs[i] && !strcmp(class->funcs[i]->functionname, functionname))
+            return class->funcs[i];
+    }
+    return NULL;
+}
+
 void odv_scb_info(const struct ODVSCBFile *sfile)
 {
     int i;

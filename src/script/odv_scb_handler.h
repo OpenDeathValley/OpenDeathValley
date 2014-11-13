@@ -57,6 +57,9 @@ void odv_scb_info(const struct ODVSCBFile *sfile);
 void odv_scb_class_info(const struct ODVSCBClass *class);
 void odv_scb_function_info(const struct ODVSCBFunction *func);
 
+struct ODVSCBClass *odv_scb_get_class_byname(const struct ODVSCBFile *sfile, const char *classname);
+struct ODVSCBFunction *odv_scb_get_function_byname(const struct ODVSCBClass *, const char *functionname);
+
 void odv_scb_clean_function(struct ODVSCBFunction *function);
 void odv_scb_clean_class(struct ODVSCBClass *class);
 

@@ -15,11 +15,23 @@ void odv_test_resource(const char *filename)
 void odv_test_script(const char *filename)
 {
     struct ODVSCBFile *sfile = NULL;
+    struct ODVSCBClass *class = NULL;
+    struct ODVSCBFunction *func = NULL;
 
     fprintf(stderr, "[+] odv_scb_open = %s\n", filename);
     sfile = odv_scb_open(filename);
     if (sfile == NULL) {
         return;
+    }
+    class = odv_scb_get_class_byname(sfile, "__1___Tir_au_co5440da0");
+    if (class == NULL) {
+        fprintf(stderr, "[-] Can't find class \"__1___Tir_au_co5440da0\"\n");
+    }
+    else {
+        func = odv_scb_get_function_byname(class, "EnterZone");
+        if (func == NULL) {
+            fprintf(stderr, "[-] Can't find function \"EnterZone\"\n");
+        }
     }
     odv_scb_info(sfile);
     odv_scb_close(sfile);
