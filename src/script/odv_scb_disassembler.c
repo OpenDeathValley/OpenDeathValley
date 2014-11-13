@@ -62,7 +62,7 @@ char *odv_scb_operation_flag_info(unsigned short flag)
         switch (flag) {
             case 0x4000:
                 /* printf("f: 0x4000"); */
-                return "arg_";
+                return "class_var_";
                 break;
 
             case 0x8000:
@@ -134,8 +134,9 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_0 = *(unsigned short*)(buf + 1);
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
-            printf("\t0x07 - ??? - sval_0: 0x%04X ; ", sval_0);
-            odv_scb_operation_flag_info(flag_0);
+            /* printf("\t0x07 - ??? - sval_0: 0x%04X ; ", sval_0);
+            odv_scb_operation_flag_info(flag_0); */
+            printf("\t0x07 - return %s%d", odv_scb_operation_flag_info(flag_0), sval_0);
             printf("\n");
             break;
 
@@ -167,7 +168,7 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
                 printf("\t0x0C - [-] Invalid external method num %d\n", ival_0);
                 break;
             }
-            printf("\t0x0C - Call external method num %d: %s\n", ival_0, extern_func[ival_0]);
+            printf("\t0x0C - call [%d] (%s)\n", ival_0, extern_func[ival_0]);
             break;
 
         case 0x0D:
@@ -181,7 +182,7 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
 
         case 0x0E:
             ival_0 = *(unsigned int*)(buf + 1);
-            printf("\t0x0E - JMP %08X\n", ival_0);
+            printf("\t0x0E - jmp %08X\n", ival_0);
             break;
 
         case 0x0F:
@@ -190,7 +191,7 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_0 = sval_0 & 0x3FFF;
             ival_0 = *(unsigned int*)(buf + 1 + 4);
             /* printf("\t0x0F - JE - sval_0: 0x%04X ; flag_0: 0x%4X ; ival_0: 0x%08X\n", sval_0, flag_0, ival_0); */
-            printf("\t0x0F - TEST %s%d ; JZ %08X", odv_scb_operation_flag_info(flag_0), sval_0, ival_0);
+            printf("\t0x0F - test %s%d ; jz %08X", odv_scb_operation_flag_info(flag_0), sval_0, ival_0);
             printf("\n");
             break;
 
@@ -248,6 +249,20 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             printf("\n");
             break;
 
+        case 0x19:
+            sval_0 = *(unsigned short*)(buf + 1);
+            flag_0 = sval_0 & 0xC000;
+            sval_0 = sval_0 & 0x3FFF;
+            sval_1 = *(unsigned short*)(buf + 1 + 2);
+            flag_1 = sval_1 & 0xC000;
+            sval_1 = sval_1 & 0x3FFF;
+            sval_2 = *(unsigned short*)(buf + 1 + 4);
+            flag_2 = sval_2 & 0xC000;
+            sval_2 = sval_2 & 0x3FFF;
+            printf("\t0x24 - mov %s%d, (%s%d + %s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1, odv_scb_operation_flag_info(flag_2), sval_2);
+            printf("\n");
+            break;
+
         case 0x1A:
             sval_0 = *(unsigned short*)(buf + 1);
             flag_0 = sval_0 & 0xC000;
@@ -265,6 +280,20 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             printf(" ; sval_2: 0x%04X ; ", sval_2);
             odv_scb_operation_flag_info(flag_2); */
             printf("\t0x24 - mov %s%d, (%s%d - %s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1, odv_scb_operation_flag_info(flag_2), sval_2);
+            printf("\n");
+            break;
+
+        case 0x23:
+            sval_0 = *(unsigned short*)(buf + 1);
+            flag_0 = sval_0 & 0xC000;
+            sval_0 = sval_0 & 0x3FFF;
+            sval_1 = *(unsigned short*)(buf + 1 + 2);
+            flag_1 = sval_1 & 0xC000;
+            sval_1 = sval_1 & 0x3FFF;
+            sval_2 = *(unsigned short*)(buf + 1 + 4);
+            flag_2 = sval_2 & 0xC000;
+            sval_2 = sval_2 & 0x3FFF;
+            printf("\t0x23 - mov %s%d, (%s%d >= %s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1, odv_scb_operation_flag_info(flag_2), sval_2);
             printf("\n");
             break;
 
