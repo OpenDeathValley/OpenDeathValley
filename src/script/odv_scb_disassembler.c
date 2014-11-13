@@ -51,6 +51,11 @@ void odv_scb_print_opcode_bytes(const unsigned char *buf)
     }
 }
 
+/*
+    /!\                                     /!\
+    /!\ Those values are probably wrong     /!\
+    /!\                                     /!\
+*/
 char *odv_scb_operation_flag_info(unsigned short flag)
 {
     if (flag) {
