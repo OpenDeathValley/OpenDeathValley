@@ -1,6 +1,6 @@
 #include "odv_scb_disassembler.h"
 
-char *extern_func[] = {"sub_5E2AF0", "sub_5E2B00", "sub_5E2B10", "sub_5E2B30",
+char *extern_func[NB_EXTERNAL_FUNC] = {"sub_5E2AF0", "sub_5E2B00", "sub_5E2B10", "sub_5E2B30",
     "sub_5E2B40", "sub_5E2B50", "sub_5E2B70", "sub_5E2B80", "sub_5E2B90",
     "sub_5E2BB0", "sub_5E2BC0", "sub_5E2BD0", "sub_5E2BE0", "sub_5E2BF0",
     "sub_5E2C00", "sub_5E2C20", "sub_5E2C30", "sub_5E2C40", "sub_5E2C50",
@@ -166,7 +166,11 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             ival_0 = *(unsigned int*)(buf + 1);
             printf("%08X: ", addr);
             odv_scb_print_opcode_bytes(buf);
-            printf("\t0x0C - Call external %d method: %s\n", ival_0, extern_func[ival_0]);
+            if (ival_0 >= NB_EXTERNAL_FUNC) {
+                printf("\t0x0C - [-] Invalid external method num %d\n", ival_0);
+                break;
+            }
+            printf("\t0x0C - Call external method num %d: %s\n", ival_0, extern_func[ival_0]);
             break;
 
         case 0x0D:

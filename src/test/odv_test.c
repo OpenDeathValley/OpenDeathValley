@@ -16,12 +16,12 @@ void odv_test_script(const char *filename)
 {
     struct ODVSCBFile *sfile = NULL;
 
-    printf("[+] odv_scb_open = %s\n", filename);
+    fprintf(stderr, "[+] odv_scb_open = %s\n", filename);
     sfile = odv_scb_open(filename);
     if (sfile == NULL) {
         return;
     }
-    /* odv_scb_info(sfile); */
+    odv_scb_info(sfile);
     odv_scb_close(sfile);
 }
 
