@@ -1,4 +1,4 @@
-#include "ODVSCBManager.h"
+#include "odv_scb_handler.h"
 
 char *extern_func[] = {"sub_5E2AF0", "sub_5E2B00", "sub_5E2B10", "sub_5E2B30",
     "sub_5E2B40", "sub_5E2B50", "sub_5E2B70", "sub_5E2B80", "sub_5E2B90",
@@ -42,15 +42,14 @@ char *extern_func[] = {"sub_5E2AF0", "sub_5E2B00", "sub_5E2B10", "sub_5E2B30",
     "sub_5E3B70", "sub_5E3B80", "sub_5E3BA0", "sub_5E3BB0", "sub_5E3BC0",
     "sub_5E3BD0" };
 
-struct ODVSCBFile *odv_scb_open(char *filename)
+struct ODVSCBFile *odv_scb_open(const char *filename)
 {
     struct ODVFile *file = NULL;
     struct ODVSCBFile *sfile = NULL;
     struct ODVSCBClass *class = NULL;
     unsigned int i;
 
-    /* file = odv_file_open(filename); */
-    file = odv_file_open_win(filename);
+    file = odv_file_open(filename);
     if (file == NULL) {
         fprintf(stderr, "[-] odv_scb_open - odv_file_open failed\n");
         return NULL;
@@ -58,21 +57,20 @@ struct ODVSCBFile *odv_scb_open(char *filename)
     sfile = (struct ODVSCBFile*)malloc(sizeof (struct ODVSCBFile));
     if (sfile == NULL) {
         fprintf(stderr, "[-] odv_scb_open - malloc failed\n");
-        /* odv_file_close(file); */
-        odv_file_close_win(file);
+        odv_file_close(file);
         return NULL;
     }
     memset(sfile, 0, sizeof (struct ODVSCBFile));
     sfile->file = file;
     if (odv_scb_parse_header(sfile) == 0) {
-        odv_file_close_win(sfile->file);
+        odv_file_close(sfile->file);
         free(sfile);
         return NULL;
     }
     sfile->classes = (struct ODVSCBClass**)malloc(sizeof(struct ODVSCBClass*) * sfile->nbclasses);
     if (sfile->classes == NULL) {
         fprintf(stderr, "[-] odv_scb_open - malloc failed\n");
-        odv_file_close_win(sfile->file);
+        odv_file_close(sfile->file);
         free(sfile);
         return NULL;
     }
@@ -80,7 +78,7 @@ struct ODVSCBFile *odv_scb_open(char *filename)
     for (i = 0; i < sfile->nbclasses; i++) {
         class = odv_scb_parse_class(sfile);
         if (class == NULL) {
-            odv_file_close_win(sfile->file);
+            odv_file_close(sfile->file);
             free(sfile);
             /* TODO: free all previous one */
             return NULL;
@@ -162,8 +160,8 @@ struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
 
     int numberofbytesread;
 
-    unsigned char unk_byte_00;
-    unsigned long long unk_qword_00;
+    //unsigned char unk_byte_00;
+    //unsigned long long unk_qword_00;
 
     int nbofquads = 0;
     int nbofquadsread = 0;
@@ -670,7 +668,7 @@ void odv_scb_close(struct ODVSCBFile *sfile)
     if (sfile == NULL)
         return;
     if (sfile->file != NULL)
-        odv_file_close_win(sfile->file);
+        odv_file_close(sfile->file);
     /* TODO: more clean */
     if (sfile->classes) {
         for (i = 0; i < sfile->nbclasses; i++) {

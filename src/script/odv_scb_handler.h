@@ -1,11 +1,11 @@
-#ifndef OPENDV_SCB_MANAGER_H
-#define OPENDV_SCB_MANAGER_H
+#ifndef OPENDV_SCB_HANDLER_H
+#define OPENDV_SCB_HANDLER_H
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "ODVFile.h"
+#include "odv_file.h"
 
 #define SCB_VERSION 1.0
 
@@ -44,7 +44,7 @@ struct ODVSCBFile
     struct ODVSCBClass **classes;
 };
 
-struct ODVSCBFile *odv_scb_open(char *filename);
+struct ODVSCBFile *odv_scb_open(const char *filename);
 void odv_scb_close(struct ODVSCBFile *sfile);
 int odv_scb_parse_header(struct ODVSCBFile *sfile);
 
@@ -57,4 +57,4 @@ struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile);
 struct ODVSCBFunction *odv_scb_parse_function(struct ODVSCBFile *sfile);
 // int odv_scb_parse_function(struct ODVSCBFile *sfile);
 
-#endif /* OPENDV_SCB_MANAGER_H */
+#endif /* OPENDV_SCB_HANDLER_H */

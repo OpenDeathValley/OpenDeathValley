@@ -14,8 +14,14 @@ void odv_test_resource(const char *filename)
 
 void odv_test_script(const char *filename)
 {
-    (void)filename;
+    struct ODVSCBFile *sfile = NULL;
 
+    sfile = odv_scb_open(filename);
+    if (sfile == NULL) {
+        return;
+    }
+    odv_scb_info(sfile);
+    odv_scb_close(sfile);
 }
 
 void help(void)

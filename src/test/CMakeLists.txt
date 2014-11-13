@@ -2,6 +2,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/src/core
 	${CMAKE_SOURCE_DIR}/src/resources
+    ${CMAKE_SOURCE_DIR}/src/script
 )
 
 set(INCROOT ${CMAKE_SOURCE_DIR}/src/test)
@@ -22,8 +23,10 @@ ${SRC_FILES}
 
 add_dependencies(odv_test
 resources
+script
 core)
 
 target_link_libraries(odv_test
 resources
+script
 core)
