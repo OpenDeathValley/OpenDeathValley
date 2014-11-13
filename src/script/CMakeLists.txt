@@ -8,10 +8,12 @@ set(SRCROOT ${CMAKE_SOURCE_DIR}/src/script)
 
 set(HEADER_FILES
     ${INCROOT}/odv_scb_handler.h
+    ${INCROOT}/odv_scb_disassembler.h
 )
 
 set(SRC_FILES
     ${SRCROOT}/odv_scb_handler.c
+    ${SRCROOT}/odv_scb_disassembler.c
 )
 
 add_library(script ${HEADER_FILES} ${SRC_FILES})
