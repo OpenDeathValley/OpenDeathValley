@@ -5,7 +5,7 @@ struct ODVSCBFile *odv_scb_open(const char *filename)
     struct ODVFile *file = NULL;
     struct ODVSCBFile *sfile = NULL;
     struct ODVSCBClass *class = NULL;
-    unsigned int i;
+    int i;
 
     file = odv_file_open(filename);
     if (file == NULL) {
@@ -114,7 +114,7 @@ struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
     unsigned int nbofquads;*/
     struct ODVSCBClass *class = NULL;
     struct ODVSCBFunction *func = NULL;
-    unsigned int i;
+    int i;
 
     int numberofbytesread;
 
@@ -255,7 +255,7 @@ int odv_scb_parse_header(struct ODVSCBFile *sfile)
 
 void odv_scb_info(const struct ODVSCBFile *sfile)
 {
-    unsigned int i;
+    int i;
 
     if (sfile == NULL)
         return;
@@ -275,7 +275,7 @@ void odv_scb_info(const struct ODVSCBFile *sfile)
 
 void odv_scb_function_info(const struct ODVSCBFunction *func)
 {
-    unsigned int i;
+    int i;
 
     if (func == NULL)
         return;
@@ -300,7 +300,7 @@ void odv_scb_function_info(const struct ODVSCBFunction *func)
 
 void odv_scb_class_info(const struct ODVSCBClass *class)
 {
-    unsigned int i;
+    int i;
 
     if (class == NULL)
         return;
@@ -320,7 +320,7 @@ void odv_scb_class_info(const struct ODVSCBClass *class)
 
 void odv_scb_close(struct ODVSCBFile *sfile)
 {
-    unsigned int i;
+    int i;
 
     if (sfile == NULL)
         return;

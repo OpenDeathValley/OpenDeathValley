@@ -13,14 +13,14 @@
 struct ODVSCBFunction
 {
     char functionname[1024];
-    unsigned int address;
-    unsigned int nbofparams;
-    unsigned int sizeofretval;
-    unsigned int sizeofparams;
-    unsigned int sizeofvolatile;
-    unsigned int sizeoftempor;
-    unsigned int nbofvariables;
-    unsigned int nbofquads;
+    int address;
+    int nbofparams;
+    int sizeofretval;
+    int sizeofparams;
+    int sizeofvolatile;
+    int sizeoftempor;
+    int nbofvariables;
+    int nbofquads;
     unsigned char *bytecode;
 };
 
@@ -28,10 +28,10 @@ struct ODVSCBClass
 {
     char filename[1024];
     char classname[1024];
-    unsigned int nbofvariables;
-    unsigned int sizeofvariables;
-    unsigned int nboffunctions;
-    unsigned int nbofquads;
+    int nbofvariables;
+    int sizeofvariables;
+    int nboffunctions;
+    int nbofquads;
 
     struct ODVSCBFunction **funcs;
 };
@@ -41,7 +41,7 @@ struct ODVSCBFile
     struct ODVFile *file;
     float version;
     int debug;
-    unsigned int nbclasses;
+    int nbclasses;
     struct ODVSCBClass **classes;
 };
 
