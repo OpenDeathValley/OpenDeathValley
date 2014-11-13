@@ -104,6 +104,8 @@ struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
         free(class);
         return NULL;
     }
+    memset(class->funcs, 0, sizeof(struct ODVSCBFunction*) * class->nboffunctions);
+    memset(class->funcs, )
     for (i = 0; i < class->nboffunctions; i++) {
         func = odv_scb_parse_function(sfile);
         if (func == NULL) {
