@@ -2,13 +2,14 @@ project(odv_tools)
 
 cmake_minimum_required(VERSION 2.8)
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
-if(MSVC)
-	add_definitions(-DWINDOWS)
-endif()
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_SOURCE_DIR}/bin)
 
 IF(MSVC)
+  add_definitions(-DWINDOWS)
+  # With C89 we're forced to use non-secure functions
+  add_definitions(/D _CRT_SECURE_NO_WARNINGS)
   #    force treat warnings as errors: /WX
   #    force warning level 4
   #
@@ -23,9 +24,8 @@ IF(MSVC)
   ENDFOREACH(lang)
 ENDIF(MSVC)
 
-if(MSVC)
-  # With C89 we're forced to use non-secure functions
-  ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
-endif()
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+  add_definitions(-Wall -W -Werror -pedantic)
+endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 
 add_subdirectory(src)
