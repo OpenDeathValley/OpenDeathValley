@@ -107,7 +107,7 @@ struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
     for (i = 0; i < class->nboffunctions; i++) {
         func = odv_scb_parse_function(sfile);
         if (func == NULL) {
-            free(class);
+            odv_scb_clean_class(class);
             return NULL;
         }
         class->funcs[i] = func;
