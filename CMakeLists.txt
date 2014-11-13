@@ -23,4 +23,9 @@ IF(MSVC)
   ENDFOREACH(lang)
 ENDIF(MSVC)
 
+if(MSVC)
+  # With C89 we're forced to use non-secure functions
+  ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS)
+endif()
+
 add_subdirectory(src)
