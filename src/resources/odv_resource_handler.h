@@ -1,5 +1,5 @@
-#ifndef OPENDV_RESOURCE_MANAGER_H
-#define OPENDV_RESOURCE_MANAGER_H
+#ifndef OPENDV_RESOURCE_HANDLER_H
+#define OPENDV_RESOURCE_HANDLER_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -50,4 +50,4 @@ void odv_resource_info(const struct ODVResourceFile *rfile);
 void odv_resource_headerinfo(const struct ODVResourceHeader *re);
 void odv_resourcetype_headerinfo(const struct ODVResourceTypeHeader *re);
 
-#endif /* OPENDV_RESSOURCE_MANAGER_H */
+#endif /* OPENDV_RESOURCE_HANDLER_H */
