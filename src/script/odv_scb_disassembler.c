@@ -51,28 +51,33 @@ void odv_scb_print_opcode_bytes(const unsigned char *buf)
     }
 }
 
-void odv_scb_operation_flag_info(unsigned short flag)
+char *odv_scb_operation_flag_info(unsigned short flag)
 {
     if (flag) {
         switch (flag) {
             case 0x4000:
-                printf("f: 0x4000");
+                /* printf("f: 0x4000"); */
+                return "arg_";
                 break;
 
             case 0x8000:
-                printf("f: 0x8000 (NS_VOLATILE_VAR)");
+                /* printf("f: 0x8000 (NS_VOLATILE_VAR)"); */
+                return "vol_var_";
                 break;
 
             case 0xC000:
-                printf("f: 0xC000 (NS_TEMP_VAR)");
+                /* return "f: 0xC000 (NS_TEMP_VAR)"; */
+                return "tmp_var_";
                 break;
 
             default:
                 fprintf(stderr, "[-] unknow flag : %04X\n", flag);
+                return "";
         }
     }
     else {
-        printf("f: 0x0000");
+        /* printf("f: 0x0000"); */
+        return "f: 0x0000";
     }
 }
 
@@ -88,17 +93,15 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
     unsigned int ival_0;
 
     opcode = buf[0];
-
+    printf("%08X: ", addr);
+    odv_scb_print_opcode_bytes(buf);
     switch (opcode) {
+
         case 0x00:
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
             printf("\t0x00 - Operation not allowed\n");
             break;
 
         case 0x01:
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
             printf("\t0x01 - NOP\n");
             break;
 
@@ -106,8 +109,6 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_0 = *(unsigned short*)(buf + 1);
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
             printf("\t0x02 - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf("\n");
@@ -116,14 +117,11 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
         case 0x03:
             sval_0 = *(unsigned short*)(buf + 1);
             sval_1 = *(unsigned short*)(buf + 1 + 2);
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x03 - sval_0 (SIZEOFVOLATILE): 0x%04X ; sval_1 (SIZEOFTEMPOR): 0x%04X\n", sval_0, sval_1);
+            /* printf("\t0x03 - sval_0 (SIZEOFVOLATILE): 0x%04X ; sval_1 (SIZEOFTEMPOR): 0x%04X\n", sval_0, sval_1); */
+            printf("\t0x03 - InitFunction(SIZEOFVOLATILE=0x%04X, SIZEOFTEMPOR=0x%04X)\n", sval_0, sval_1);
             break;
 
         case 0x04:
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
             printf("\t0x04 - VMCore::EndFunction\n");
             break;
 
@@ -131,8 +129,6 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_0 = *(unsigned short*)(buf + 1);
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
             printf("\t0x07 - ??? - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf("\n");
@@ -143,11 +139,10 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
             ival_0 = *(unsigned int*)(buf + 1 + 4);
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x08 - sval_0: 0x%04X ; ", sval_0);
+            /* printf("\t0x08 - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
-            printf(" ; ival_0: 0x%08X", ival_0);
+            printf(" ; ival_0: 0x%08X", ival_0); */
+            printf("\t0x08 - mov %s%d, somewhere_%d", odv_scb_operation_flag_info(flag_0), sval_0, ival_0);
             printf("\n");
             break;
 
@@ -155,17 +150,14 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_0 = *(unsigned short*)(buf + 1);
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x0B - PUSH ARGS - sval_0: 0x%04X ; ", sval_0);
-            odv_scb_operation_flag_info(flag_0);
+            /* printf("\t0x0B - PUSH ARGS - sval_0: 0x%04X ; ", sval_0);
+            odv_scb_operation_flag_info(flag_0); */
+            printf("\t0x0B - push %s%d", odv_scb_operation_flag_info(flag_0), sval_0);
             printf("\n");
             break;
 
         case 0x0C:
             ival_0 = *(unsigned int*)(buf + 1);
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
             if (ival_0 >= NB_EXTERNAL_FUNC) {
                 printf("\t0x0C - [-] Invalid external method num %d\n", ival_0);
                 break;
@@ -177,25 +169,24 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_0 = *(unsigned short*)(buf + 1);
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x0D - STORE RESULT - sval_0: 0x%04X ; flag_0: 0x%4X\n", sval_0, flag_0);
+            /* printf("\t0x0D - STORE RESULT - sval_0: 0x%04X ; flag_0: 0x%4X\n", sval_0, flag_0); */
+            printf("\t0x0D - mov %s%d, RESULT", odv_scb_operation_flag_info(flag_0), sval_0);
+            printf("\n");
             break;
 
         case 0x0E:
             ival_0 = *(unsigned int*)(buf + 1);
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x0E - JMP - %08X\n", ival_0);
+            printf("\t0x0E - JMP %08X\n", ival_0);
             break;
 
         case 0x0F:
             sval_0 = *(unsigned short*)(buf + 1);
             flag_0 = sval_0 & 0xC000;
+            sval_0 = sval_0 & 0x3FFF;
             ival_0 = *(unsigned int*)(buf + 1 + 4);
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x0F - JE - sval_0: 0x%04X ; flag_0: 0x%4X ; ival_0: 0x%08X\n", sval_0, flag_0, ival_0);
+            /* printf("\t0x0F - JE - sval_0: 0x%04X ; flag_0: 0x%4X ; ival_0: 0x%08X\n", sval_0, flag_0, ival_0); */
+            printf("\t0x0F - TEST %s%d ; JZ %08X", odv_scb_operation_flag_info(flag_0), sval_0, ival_0);
+            printf("\n");
             break;
 
         case 0x11:
@@ -205,12 +196,11 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_1 = *(unsigned short*)(buf + 1 + 2);
             flag_1 = sval_1 & 0xC000;
             sval_1 = sval_1 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x11 - ??? - sval_0: 0x%04X ; ", sval_0);
+            /*printf("\t0x11 - ??? - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf(" ; sval_1: 0x%04X ; ", sval_1);
-            odv_scb_operation_flag_info(flag_1);
+            odv_scb_operation_flag_info(flag_1);*/
+            printf("\t0x11 - mov %s%d, %s%d", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1);
             printf("\n");
             break;
 
@@ -219,11 +209,10 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
             ival_0 = *(unsigned int*)(buf + 1 + 4);
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x13 - LOAD IMM32 - sval_0: 0x%04X ; ", sval_0);
+            /* printf("\t0x13 - LOAD IMM32 - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
-            printf(" ; ival_0: 0x%08X", ival_0);
+            printf(" ; ival_0: 0x%08X", ival_0); */
+            printf("\t0x13 - mov %s%d, 0x%08X", odv_scb_operation_flag_info(flag_0), sval_0, ival_0);
             printf("\n");
             break;
 
@@ -232,11 +221,10 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             flag_0 = sval_0 & 0xC000;
             sval_0 = sval_0 & 0x3FFF;
             ival_0 = *(unsigned int*)(buf + 1 + 4);
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x14 - LOAD IMM32 - sval_0: 0x%04X ; ", sval_0);
+            /* printf("\t0x14 - LOAD IMM32 - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
-            printf(" ; ival_0: 0x%08X", ival_0);
+            printf(" ; ival_0: 0x%08X", ival_0); */
+            printf("\t0x14 - mov %s%d, 0x%08X", odv_scb_operation_flag_info(flag_0), sval_0, ival_0);
             printf("\n");
             break;
 
@@ -247,12 +235,11 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_1 = *(unsigned short*)(buf + 1 + 2);
             flag_1 = sval_1 & 0xC000;
             sval_1 = sval_1 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x15 - NS SUB - sval_0: 0x%04X ; ", sval_0);
+            /* printf("\t0x15 - NS SUB - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf(" ; sval_1: 0x%04X ; ", sval_1);
-            odv_scb_operation_flag_info(flag_1);
+            odv_scb_operation_flag_info(flag_1); */
+            printf("\t0x13 - mov %s%d, -(%s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1);
             printf("\n");
             break;
 
@@ -266,14 +253,13 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_2 = *(unsigned short*)(buf + 1 + 4);
             flag_2 = sval_2 & 0xC000;
             sval_2 = sval_2 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x1A - SUB DWORD - sval_0: 0x%04X ; ", sval_0);
+            /* printf("\t0x1A - SUB DWORD - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf(" ; sval_1: 0x%04X ; ", sval_1);
             odv_scb_operation_flag_info(flag_1);
             printf(" ; sval_2: 0x%04X ; ", sval_2);
-            odv_scb_operation_flag_info(flag_2);
+            odv_scb_operation_flag_info(flag_2); */
+            printf("\t0x24 - mov %s%d, (%s%d - %s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1, odv_scb_operation_flag_info(flag_2), sval_2);
             printf("\n");
             break;
 
@@ -287,14 +273,13 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_2 = *(unsigned short*)(buf + 1 + 4);
             flag_2 = sval_2 & 0xC000;
             sval_2 = sval_2 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x25 - GT DWORD - sval_0: 0x%04X ; ", sval_0);
+            /* printf("\t0x24 - GT DWORD - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf(" ; sval_1: 0x%04X ; ", sval_1);
             odv_scb_operation_flag_info(flag_1);
             printf(" ; sval_2: 0x%04X ; ", sval_2);
-            odv_scb_operation_flag_info(flag_2);
+            odv_scb_operation_flag_info(flag_2); */
+            printf("\t0x24 - mov %s%d, (%s%d > %s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1, odv_scb_operation_flag_info(flag_2), sval_2);
             printf("\n");
             break;
 
@@ -308,14 +293,13 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_2 = *(unsigned short*)(buf + 1 + 4);
             flag_2 = sval_2 & 0xC000;
             sval_2 = sval_2 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x25 - NEQ DWORD - sval_0: 0x%04X ; ", sval_0);
+            /* printf("\t0x25 - NEQ DWORD - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf(" ; sval_1: 0x%04X ; ", sval_1);
             odv_scb_operation_flag_info(flag_1);
             printf(" ; sval_2: 0x%04X ; ", sval_2);
-            odv_scb_operation_flag_info(flag_2);
+            odv_scb_operation_flag_info(flag_2); */
+            printf("\t0x25 - mov %s%d, (%s%d != %s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1, odv_scb_operation_flag_info(flag_2), sval_2);
             printf("\n");
             break;
 
@@ -329,20 +313,17 @@ void odv_scb_diassemble(unsigned int addr, const unsigned char *buf)
             sval_2 = *(unsigned short*)(buf + 1 + 4);
             flag_2 = sval_2 & 0xC000;
             sval_2 = sval_2 & 0x3FFF;
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
-            printf("\t0x26 - EQ DWORD - sval_0: 0x%04X ; ", sval_0);
+            /*printf("\t0x26 - EQ DWORD - sval_0: 0x%04X ; ", sval_0);
             odv_scb_operation_flag_info(flag_0);
             printf(" ; sval_1: 0x%04X ; ", sval_1);
             odv_scb_operation_flag_info(flag_1);
             printf(" ; sval_2: 0x%04X ; ", sval_2);
-            odv_scb_operation_flag_info(flag_2);
+            odv_scb_operation_flag_info(flag_2);*/
+            printf("\t0x26 - mov %s%d, (%s%d == %s%d)", odv_scb_operation_flag_info(flag_0), sval_0, odv_scb_operation_flag_info(flag_1), sval_1, odv_scb_operation_flag_info(flag_2), sval_2);
             printf("\n");
             break;
 
         default:
-            printf("%08X: ", addr);
-            odv_scb_print_opcode_bytes(buf);
             printf("\t%02X - FUU - %08X %08X\n", opcode, *(unsigned int*)(buf + 1), *(unsigned int*)(buf + 1 + 4));
     }
 }
