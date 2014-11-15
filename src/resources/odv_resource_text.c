@@ -43,7 +43,6 @@ struct ODVResourceTextEntry *odv_ressource_parse_text_entry(struct ODVResourceFi
     struct ODVResourceTextEntry *entry = NULL;
     size_t numberofbytesread = 0;
     unsigned short length;
-    char *buf = NULL;
     wchar_t *wbuf = NULL;
 
     numberofbytesread = odv_file_read(rfile->file, &length, 2);
@@ -51,7 +50,7 @@ struct ODVResourceTextEntry *odv_ressource_parse_text_entry(struct ODVResourceFi
         fprintf(stderr, "[-] odv_ressource_parse_text_entry - file read 2 failed\n");
         return NULL;
     }
-    wbuf = calloc((length * 2) + 1, sizeof (char));
+    wbuf = calloc(length + 1, sizeof (wchar_t));
     if (wbuf == NULL) {
         fprintf(stderr, "[-] odv_ressource_parse_text_entry - calloc failed\n");
         return NULL;
@@ -62,22 +61,23 @@ struct ODVResourceTextEntry *odv_ressource_parse_text_entry(struct ODVResourceFi
         free(wbuf);
         return NULL;
     }
-    buf = calloc(length + 1, sizeof (char));
+    /*buf = calloc(length + 1, sizeof (char));
     if (buf == NULL) {
         fprintf(stderr, "[-] odv_ressource_parse_text_entry - calloc failed\n");
         free(wbuf);
         return NULL;
     }
+    hex_dump(wbuf, length);
     wcstombs(buf, wbuf, length);
-    free(wbuf);
+    free(wbuf);*/
     entry = calloc(1, sizeof (struct ODVResourceTextEntry));
     if (entry == NULL) {
         fprintf(stderr, "[-] odv_ressource_parse_text_entry - calloc failed\n");
-        free(buf);
+        free(wbuf);
         return NULL;
     }
     entry->length = length;
-    entry->buf = buf;
+    entry->wbuf = wbuf;
     return entry;
 }
 
@@ -93,8 +93,8 @@ void odv_resource_text_info(const struct ODVResourceText *text)
     if (text->entries != NULL) {
         for (i = 0; i < text->nbentry; i++) {
             if (text->entries[i] != NULL) {
-                printf("(%d): %s\n", i, text->entries[i]->buf);
-                hex_dump(text->entries[i]->buf, text->entries[i]->length);
+                printf("(%d): %ls\n", i, text->entries[i]->wbuf);
+                /* wprintf(L"(%d): %s\n", i, text->entries[i]->wbuf); */
             }
         }
     }
@@ -107,9 +107,9 @@ void odv_resource_clean_text_entry(struct ODVResourceTextEntry *entry)
     if (entry == NULL)
         return;
     entry->length = 0;
-    if (entry->buf != NULL)
-        free(entry->buf);
-    entry->buf = NULL;
+    if (entry->wbuf != NULL)
+        free(entry->wbuf);
+    entry->wbuf = NULL;
     free(entry);
 }
 

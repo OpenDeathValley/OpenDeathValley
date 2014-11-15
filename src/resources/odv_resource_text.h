@@ -1,6 +1,8 @@
 #ifndef OPENDV_RESOURCE_TEXT_H
 #define OPENDV_RESOURCE_TEXT_H
 
+#include <wchar.h>
+
 #include "odv_resource.h"
 
 #define TEXT_SIGNATURE 0x54584554
@@ -8,7 +10,7 @@
 struct ODVResourceTextEntry
 {
     unsigned short length;
-    char *buf;
+    wchar_t *wbuf;
 };
 
 struct ODVResourceText

@@ -25,7 +25,7 @@ IF(MSVC)
 ENDIF(MSVC)
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-  add_definitions(-Wall -W -Werror -pedantic)
+  add_definitions(-Wall -W -Werror -pedantic -std=c99)
 endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 
 add_subdirectory(src)
