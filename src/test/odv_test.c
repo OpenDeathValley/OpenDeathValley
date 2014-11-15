@@ -4,6 +4,7 @@ void odv_test_resource(const char *filename)
 {
     struct ODVResourceFile *rfile = NULL;
 
+    fprintf(stderr, "[+] odv_resource_open = %s\n", filename);
     rfile = odv_resource_open(filename);
     if (rfile == NULL) {
         return;

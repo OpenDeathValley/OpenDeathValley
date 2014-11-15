@@ -7,39 +7,14 @@
 
 #include "odv_file.h"
 
-#define RESOURCE_SIGNATURE 0x53455253
-#define RESOURCE_VERSION 0x00000100
-
-#define RESOURCE_HEADER_SIZE 0x0C
-
-struct ODVResourceHeader
-{
-    unsigned int signature;
-    unsigned int version;
-    unsigned int nbtypeentry;
-};
-
-struct ODVResourceTypeHeader
-{
-    unsigned int signature;
-    unsigned int index;
-};
-
-struct ODVResourceType
-{
-    struct ODVResourceTypeHeader header;
-    void *data;
-};
-
-struct ODVResourceFile
-{
-    struct ODVFile *file;
-    struct ODVResourceHeader header;
-    struct ODVResourceType **type;
-};
+#include "odv_resource.h"
+#include "odv_resource_wave.h"
 
 struct ODVResourceFile *odv_resource_open(const char *filename);
 int odv_resource_read_header(struct ODVResourceFile *rfile);
+
+struct ODVResourceEntry *odv_resource_parse_entry(struct ODVResourceFile *rfile);
+
 void odv_resource_close(struct ODVResourceFile *rfile);
 
 int odv_resource_get_type_index(struct ODVResourceFile *rfile, unsigned int index);
@@ -47,7 +22,7 @@ int odv_resource_get_type_index(struct ODVResourceFile *rfile, unsigned int inde
 /* INFO / DBG */
 
 void odv_resource_info(const struct ODVResourceFile *rfile);
-void odv_resource_headerinfo(const struct ODVResourceHeader *re);
-void odv_resourcetype_headerinfo(const struct ODVResourceTypeHeader *re);
+/* void odv_resource_headerinfo(const struct ODVResourceHeader *re);
+void odv_resourcetype_headerinfo(const struct ODVResourceTypeHeader *re); */
 
 #endif /* OPENDV_RESOURCE_HANDLER_H */
