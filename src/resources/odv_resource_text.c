@@ -44,7 +44,7 @@ struct ODVResourceTextEntry *odv_ressource_parse_text_entry(struct ODVResourceFi
     size_t numberofbytesread = 0;
     unsigned short length;
     char *buf = NULL;
-    char *wbuf = NULL;
+    wchar_t *wbuf = NULL;
 
     numberofbytesread = odv_file_read(rfile->file, &length, 2);
     if (numberofbytesread != 2) {
@@ -68,7 +68,7 @@ struct ODVResourceTextEntry *odv_ressource_parse_text_entry(struct ODVResourceFi
         free(wbuf);
         return NULL;
     }
-    snprintf(buf, length, "%S", wbuf);
+    wcstombs(buf, wbuf, length);
     free(wbuf);
     entry = calloc(1, sizeof (struct ODVResourceTextEntry));
     if (entry == NULL) {
