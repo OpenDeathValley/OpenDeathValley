@@ -1,7 +1,5 @@
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/src/core
-)
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/src/core)
 
 set(INCROOT ${CMAKE_SOURCE_DIR}/src/script)
 set(SRCROOT ${CMAKE_SOURCE_DIR}/src/script)

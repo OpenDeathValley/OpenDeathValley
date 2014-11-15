@@ -96,6 +96,14 @@ struct ODVResourceEntry *odv_resource_parse_entry(struct ODVResourceFile *rfile)
             }
         break;
 
+        case TEXT_SIGNATURE:
+            entry->data = odv_resource_parse_text(rfile);
+            if (entry->data == NULL) {
+                free(entry);
+                entry = NULL;
+            }
+        break;
+
         default:
             fprintf(stderr, "[-] odv_resource_parse_entry - unknow signature %08X\n", signature);
             free(entry);
@@ -127,7 +135,14 @@ void odv_resource_close(struct ODVResourceFile *rfile)
                         odv_resource_clean_wave(rfile->entries[i]->data);
                         free(rfile->entries[i]);
                         rfile->entries[i] = NULL;
-                        break;
+                    break;
+
+                    case TEXT_SIGNATURE:
+                        odv_resource_clean_text(rfile->entries[i]->data);
+                        free(rfile->entries[i]);
+                        rfile->entries[i] = NULL;
+                    break;
+
                     default:
                         fprintf(stderr, "[-] odv_resource_close - unknow signature %08X\n", rfile->entries[i]->signature);
                 }
@@ -156,6 +171,11 @@ void odv_resource_info(const struct ODVResourceFile *rfile)
                     case WAVE_SIGNATURE:
                         odv_resource_wave_info(rfile->entries[i]->data);
                         break;
+
+                    case TEXT_SIGNATURE:
+                        odv_resource_text_info(rfile->entries[i]->data);
+                        break;
+
                     default:
                         fprintf(stderr, "[-] odv_resource_close - unknow signature %08X\n", rfile->entries[i]->signature);
                 }
