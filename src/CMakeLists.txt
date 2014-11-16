@@ -1,6 +1,0 @@
-add_subdirectory(core)
-add_subdirectory(resources)
-add_subdirectory(script)
-add_subdirectory(sounds)
-add_subdirectory(test)
-add_subdirectory(utils)
