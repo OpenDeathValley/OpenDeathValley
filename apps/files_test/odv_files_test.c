@@ -1,4 +1,4 @@
-#include "odv_test.h"
+#include "odv_files_test.h"
 
 void odv_test_resource(const char *filename)
 {

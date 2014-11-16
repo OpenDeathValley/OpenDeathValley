@@ -25,4 +25,4 @@ else()
 endif()
 
 add_subdirectory(components/files)
-add_subdirectory(test)
+add_subdirectory(apps/files_test)
