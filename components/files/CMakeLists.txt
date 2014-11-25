@@ -7,6 +7,7 @@ set(ODV_FILES_SRC
     odv_resource_wave.c
     odv_resource_picc.c
     odv_resource_togl.c
+    odv_image.c
     odv_scb_disassembler.c
     odv_scb_handler.c
     odv_utils.c)
