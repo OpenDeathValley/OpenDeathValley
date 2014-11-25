@@ -5,24 +5,6 @@
 
 #define PICC_SIGNATURE 0x43434950
 
-/*struct ODVResourceWaveEntry
-{
-    unsigned short length;
-    char *buf;
-};
-
-struct ODVResourceWave
-{
-    unsigned int unk_dword_00;
-    short nbentry;
-    struct ODVResourceWaveEntry **entries;
-};
-
-void *odv_resource_parse_wave(struct ODVResourceFile *rfile);
-struct ODVResourceWaveEntry *odv_ressource_parse_wave_entry(struct ODVResourceFile *rfile);
-void odv_resource_clean_wave(struct ODVResourceWave *wave);
-void odv_resource_wave_info(const struct ODVResourceWave *wave);*/
-
 struct ODVResourcePiccEntry
 {
     unsigned short width;

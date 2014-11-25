@@ -112,6 +112,14 @@ struct ODVResourceEntry *odv_resource_parse_entry(struct ODVResourceFile *rfile)
             }
         break;
 
+        case TOGL_SIGNATURE:
+            entry->data = odv_resource_parse_togl(rfile);
+            if (entry->data == NULL) {
+                free(entry);
+                entry = NULL;
+            }
+        break;
+
         default:
             fprintf(stderr, "[-] odv_resource_parse_entry - unknow signature %08X\n", signature);
             free(entry);
@@ -157,6 +165,12 @@ void odv_resource_close(struct ODVResourceFile *rfile)
                         rfile->entries[i] = NULL;
                     break;
 
+                    case TOGL_SIGNATURE:
+                        odv_resource_clean_togl(rfile->entries[i]->data);
+                        free(rfile->entries[i]);
+                        rfile->entries[i] = NULL;
+                    break;
+
                     default:
                         fprintf(stderr, "[-] odv_resource_close - unknow signature %08X\n", rfile->entries[i]->signature);
                 }
@@ -193,6 +207,10 @@ void odv_resource_info(const struct ODVResourceFile *rfile)
 
                     case PICC_SIGNATURE:
                         odv_resource_picc_info(rfile->entries[i]->data);
+                        break;
+
+                    case TOGL_SIGNATURE:
+                        odv_resource_togl_info(rfile->entries[i]->data);
                         break;
 
                     default:
