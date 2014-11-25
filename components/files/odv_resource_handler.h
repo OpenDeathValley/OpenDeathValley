@@ -10,6 +10,7 @@
 #include "odv_resource.h"
 #include "odv_resource_wave.h"
 #include "odv_resource_text.h"
+#include "odv_resource_picc.h"
 
 struct ODVResourceFile *odv_resource_open(const char *filename);
 int odv_resource_read_header(struct ODVResourceFile *rfile);
