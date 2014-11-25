@@ -1,5 +1,37 @@
 #include "odv_resource_picc.h"
 
+void *odv_resource_parse_pic(struct ODVResourceFile *rfile)
+{
+    struct ODVResourcePicc *picc = NULL;
+    struct ODVResourcePiccEntry *entry = NULL;
+    unsigned int unk_dword_00;
+    size_t numberofbytesread = 0;
+    int i;
+
+    numberofbytesread = odv_file_read(rfile->file, &unk_dword_00, 4);
+    if (numberofbytesread != 4) {
+        fprintf(stderr, "[-] odv_resource_parse_pic - file read 4 failed\n");
+        return NULL;
+    }
+    picc = calloc(1, sizeof (struct ODVResourcePicc));
+    if (picc == NULL) {
+        fprintf(stderr, "[-] odv_resource_parse_pic - calloc failed\n");
+        return NULL;
+    }
+    picc->unk_dword_00 = unk_dword_00;
+    picc->nbentry = 1;
+    picc->entries = calloc(picc->nbentry, sizeof (struct ODVResourcePiccEntry*));
+    for (i = 0; i < picc->nbentry; i++) {
+        entry = odv_ressource_parse_picc_entry(rfile);
+        if (entry == NULL) {
+            odv_resource_clean_picc(picc);
+            return NULL;
+        }
+        picc->entries[i] = entry;
+    }
+    return picc;
+}
+
 void *odv_resource_parse_picc(struct ODVResourceFile *rfile)
 {
     struct ODVResourcePicc *picc = NULL;
