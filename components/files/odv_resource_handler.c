@@ -128,6 +128,39 @@ struct ODVResourceEntry *odv_resource_parse_entry(struct ODVResourceFile *rfile)
             }
         break;
 
+        case BTTN_SIGNATURE:
+            entry->data = odv_resource_parse_bttn(rfile);
+            if (entry->data == NULL) {
+                free(entry);
+                entry = NULL;
+            }
+        break;
+
+        case CUR_SIGNATURE:
+            entry->data = odv_resource_parse_cur(rfile);
+            if (entry->data == NULL) {
+                free(entry);
+                entry = NULL;
+            }
+        break;
+
+        case NPTF_SIGNATURE:
+        case SLID_SIGNATURE:
+            entry->data = odv_resource_parse_nptf(rfile);
+            if (entry->data == NULL) {
+                free(entry);
+                entry = NULL;
+            }
+        break;
+
+        case RDO_SIGNATURE:
+            entry->data = odv_resource_parse_rdo(rfile);
+            if (entry->data == NULL) {
+                free(entry);
+                entry = NULL;
+            }
+        break;
+
         default:
             fprintf(stderr, "[-] odv_resource_parse_entry - unknow signature %08X\n", signature);
             free(entry);
@@ -180,6 +213,31 @@ void odv_resource_close(struct ODVResourceFile *rfile)
                         rfile->entries[i] = NULL;
                     break;
 
+                    case BTTN_SIGNATURE:
+                        odv_resource_clean_bttn(rfile->entries[i]->data);
+                        free(rfile->entries[i]);
+                        rfile->entries[i] = NULL;
+                    break;
+
+                    case CUR_SIGNATURE:
+                        odv_resource_clean_cur(rfile->entries[i]->data);
+                        free(rfile->entries[i]);
+                        rfile->entries[i] = NULL;
+                    break;
+
+                    case NPTF_SIGNATURE:
+                    case SLID_SIGNATURE:
+                        odv_resource_clean_nptf(rfile->entries[i]->data);
+                        free(rfile->entries[i]);
+                        rfile->entries[i] = NULL;
+                    break;
+
+                    case RDO_SIGNATURE:
+                        odv_resource_clean_rdo(rfile->entries[i]->data);
+                        free(rfile->entries[i]);
+                        rfile->entries[i] = NULL;
+                    break;
+
                     default:
                         fprintf(stderr, "[-] odv_resource_close - unknow signature %08X\n", rfile->entries[i]->signature);
                 }
@@ -221,6 +279,23 @@ void odv_resource_info(const struct ODVResourceFile *rfile)
 
                     case TOGL_SIGNATURE:
                         odv_resource_togl_info(rfile->entries[i]->data);
+                        break;
+
+                    case BTTN_SIGNATURE:
+                        odv_resource_bttn_info(rfile->entries[i]->data);
+                        break;
+
+                    case CUR_SIGNATURE:
+                        odv_resource_cur_info(rfile->entries[i]->data);
+                        break;
+
+                    case NPTF_SIGNATURE:
+                    case SLID_SIGNATURE:
+                        odv_resource_nptf_info(rfile->entries[i]->data);
+                        break;
+
+                    case RDO_SIGNATURE:
+                        odv_resource_rdo_info(rfile->entries[i]->data);
                         break;
 
                     default:

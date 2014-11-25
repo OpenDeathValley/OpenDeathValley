@@ -33,6 +33,11 @@ void *odv_resource_parse_togl(struct ODVResourceFile *rfile)
     }
     togl->nbentry = nbentry;
     togl->entries = calloc(nbentry, sizeof (struct ODVImage*));
+    if (togl->entries == NULL) {
+        free(togl);
+        fprintf(stderr, "[-] odv_resource_parse_togl - calloc failed\n");
+        return NULL;
+    }
     for (i = 0; i < togl->nbentry; i++) {
         entry = odv_image_parse(rfile->file);
         if (entry == NULL) {

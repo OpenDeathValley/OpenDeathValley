@@ -21,6 +21,11 @@ void *odv_resource_parse_pic(struct ODVResourceFile *rfile)
     picc->unk_dword_00 = unk_dword_00;
     picc->nbentry = 1;
     picc->entries = calloc(picc->nbentry, sizeof (struct ODVImage*));
+    if (picc->entries == NULL) {
+        free(picc);
+        fprintf(stderr, "[-] odv_resource_parse_pic - calloc failed\n");
+        return NULL;
+    }
     for (i = 0; i < picc->nbentry; i++) {
         entry = odv_image_parse(rfile->file);
         if (entry == NULL) {
@@ -59,6 +64,11 @@ void *odv_resource_parse_picc(struct ODVResourceFile *rfile)
     picc->unk_dword_00 = unk_dword_00;
     picc->nbentry = nbentry;
     picc->entries = calloc(nbentry, sizeof (struct ODVImage*));
+    if (picc->entries == NULL) {
+        free(picc);
+        fprintf(stderr, "[-] odv_resource_parse_pic - calloc failed\n");
+        return NULL;
+    }
     for (i = 0; i < picc->nbentry; i++) {
         entry = odv_image_parse(rfile->file);
         if (entry == NULL) {

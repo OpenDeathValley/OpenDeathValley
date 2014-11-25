@@ -12,6 +12,10 @@
 #include "odv_resource_text.h"
 #include "odv_resource_picc.h"
 #include "odv_resource_togl.h"
+#include "odv_resource_bttn.h"
+#include "odv_resource_cur.h"
+#include "odv_resource_nptf.h"
+#include "odv_resource_rdo.h"
 
 struct ODVResourceFile *odv_resource_open(const char *filename);
 int odv_resource_read_header(struct ODVResourceFile *rfile);
