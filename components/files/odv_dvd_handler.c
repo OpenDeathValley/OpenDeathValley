@@ -97,6 +97,16 @@ int odv_dvd_parse_entry(struct ODVDDvdFile *dfile)
             }
         break;
 
+        case SCRP_SIGNATURE:
+            if ((entry = odv_dvd_parse_scrp(dfile)) == NULL)
+                return 0;
+            if (odv_dvd_add_entry(dfile, entry, SCRP_SIGNATURE) == 0) {
+                free(entry);
+                return 0;
+            }
+        break;
+
+
         default:
             printf("[-] signature 0x%08X not handled\n", signature);
             dfile->file->pos = saved_pos + length;
@@ -121,6 +131,10 @@ void odv_dvd_info(struct ODVDDvdFile *dfile)
 
                     case BGND_SIGNATURE:
                         odv_dvd_bgnd_info(dfile->entries[i]->data);
+                    break;
+
+                    case SCRP_SIGNATURE:
+                        odv_dvd_scrp_info(dfile->entries[i]->data);
                     break;
 
                     default:
@@ -258,7 +272,7 @@ void odv_dvd_bgnd_info(const struct ODVDvdBgnd *bgnd)
     if (bgnd == NULL)
         return;
     printf("[- ODV DVD BGND information -]\n");
-    printf("filename : %s\n", bgnd->filename);
+    printf("filename (.dvm) : %s\n", bgnd->filename);
     odv_image_info(bgnd->img);
     printf("[----------------------------]\n");
 }
@@ -272,6 +286,145 @@ void odv_dvd_clean_bgnd(struct ODVDvdBgnd *bgnd)
     if (bgnd->img != NULL)
         odv_image_clean(bgnd->img);
     free(bgnd);
+}
+
+void *odv_dvd_parse_scrp_entry(struct ODVDDvdFile *dfile)
+{
+    unsigned short type_entry;
+    size_t numberofbytesread = 0;
+    unsigned short coord_y;
+    unsigned short coord_x;
+    unsigned short unk_word_00;
+    unsigned short unk_word_01;
+    unsigned short unk_word_02;
+    unsigned char unk_byte_00;
+    unsigned char classname_present;
+
+    numberofbytesread = odv_file_read(dfile->file, &type_entry, 2);
+    if (numberofbytesread != 2) {
+        fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+        return NULL;
+    }
+    /* printf("[+] type_entry = 0x%04X\n", type_entry); */
+    if (type_entry == 1) {
+        numberofbytesread = odv_file_read(dfile->file, &coord_y, 2);
+        if (numberofbytesread != 2) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+            return NULL;
+        }
+        numberofbytesread = odv_file_read(dfile->file, &coord_x, 2);
+        if (numberofbytesread != 2) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+            return NULL;
+        }
+        numberofbytesread = odv_file_read(dfile->file, &unk_word_00, 2);
+        if (numberofbytesread != 2) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+            return NULL;
+        }
+        numberofbytesread = odv_file_read(dfile->file, &unk_word_01, 2);
+        if (numberofbytesread != 2) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+            return NULL;
+        }
+        numberofbytesread = odv_file_read(dfile->file, &unk_byte_00, 1);
+        if (numberofbytesread != 1) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 1 failed\n");
+            return NULL;
+        }
+        /* printf("unk_word_00: 0x%04X\n", unk_word_00);
+        printf("unk_word_01: 0x%04X\n", unk_word_01);
+        printf("unk_word_02: 0x%04X\n", unk_word_02);
+        printf("unk_word_03: 0x%04X\n", unk_word_03);
+        printf("unk_byte_00: 0x%02X\n", unk_byte_00); */
+
+        printf("(0x%04X, 0x%04X),\n", coord_y, coord_x);
+
+    }
+    else if (type_entry != 2) {
+        dfile->file->pos += (4 * type_entry);
+        numberofbytesread = odv_file_read(dfile->file, &unk_word_00, 2);
+        if (numberofbytesread != 2) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+            return NULL;
+        }
+        numberofbytesread = odv_file_read(dfile->file, &unk_word_01, 2);
+        if (numberofbytesread != 2) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+            return NULL;
+        }
+        numberofbytesread = odv_file_read(dfile->file, &classname_present, 1);
+        if (numberofbytesread != 1) {
+            fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 1 failed\n");
+            return NULL;
+        }
+        if (classname_present == 1) {
+            numberofbytesread = odv_file_read(dfile->file, &unk_word_02, 2);
+            if (numberofbytesread != 2) {
+                fprintf(stderr, "[-] odv_dvd_parse_scrp_entry - file read 2 failed\n");
+                return NULL;
+            }
+            dfile->file->pos += unk_word_02;
+        }
+    }
+    else {
+        fprintf(stderr, "odv_dvd_parse_scrp_entry - type_entry not handled\n");
+        return NULL;
+    }
+
+    return NULL;
+}
+
+void *odv_dvd_parse_scrp(struct ODVDDvdFile *dfile)
+{
+    struct ODVDvdScrp *scrp = NULL;
+    unsigned int version;
+    size_t numberofbytesread = 0;
+    short nbentry;
+    int i;
+
+    if (dfile == NULL)
+        return NULL;
+    numberofbytesread = odv_file_read(dfile->file, &version, 4);
+    if (numberofbytesread != 4) {
+        fprintf(stderr, "[-] odv_dvd_parse_scrp - file read 4 failed\n");
+        return NULL;
+    }
+    if (version != 1) {
+        fprintf(stderr, "[-] odv_dvd_parse_scrp - version not valid\n");
+        return NULL;
+    }
+    numberofbytesread = odv_file_read(dfile->file, &nbentry, 2);
+    if (numberofbytesread != 2 || nbentry < 0) {
+        fprintf(stderr, "[-] odv_dvd_parse_scrp - file read 2 failed\n");
+        return NULL;
+    }
+    scrp = calloc(1, sizeof (struct ODVDvdScrp));
+    if (scrp == NULL) {
+        fprintf(stderr, "[-] odv_dvd_parse_scrp - calloc failed\n");
+        return NULL;
+    }
+    scrp->nbentry = nbentry;
+    for (i = 0; i < scrp->nbentry; i++) {
+        odv_dvd_parse_scrp_entry(dfile);
+    }
+    return scrp;
+}
+
+void odv_dvd_scrp_info(const struct ODVDvdScrp *scrp)
+{
+    if (scrp == NULL)
+        return;
+    printf("[- ODV DVD SCRP information -]\n");
+    printf("nbentry : %08X\n", scrp->nbentry);
+    printf("[----------------------------]\n");
+}
+
+void odv_dvd_clean_scrp(struct ODVDvdScrp *scrp)
+{
+    if (scrp == NULL)
+        return;
+    free(scrp);
 }
 
 void odv_dvd_close(struct ODVDDvdFile *dfile)
@@ -294,6 +447,12 @@ void odv_dvd_close(struct ODVDDvdFile *dfile)
 
                     case BGND_SIGNATURE:
                         odv_dvd_clean_bgnd(dfile->entries[i]->data);
+                        free(dfile->entries[i]);
+                        dfile->entries[i] = NULL;
+                    break;
+
+                    case SCRP_SIGNATURE:
+                        odv_dvd_clean_scrp(dfile->entries[i]->data);
                         free(dfile->entries[i]);
                         dfile->entries[i] = NULL;
                     break;

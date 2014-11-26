@@ -10,6 +10,8 @@
 
 #define MISC_SIGNATURE 0x4353494D
 #define BGND_SIGNATURE 0x444E4742
+#define BGND_SIGNATURE 0x444E4742
+#define SCRP_SIGNATURE 0x50524353
 
 #pragma pack(push, 1)
 struct ODVDvdMisc
@@ -39,6 +41,11 @@ struct ODVDvdBgnd
     struct ODVImage *img;
 };
 
+struct ODVDvdScrp
+{
+    short nbentry;
+};
+
 struct ODVDDvdEntry
 {
     unsigned int signature;
@@ -56,6 +63,9 @@ struct ODVDDvdFile *odv_dvd_open(const char *filename);
 int odv_dvd_parse(struct ODVDDvdFile *dfile);
 int odv_dvd_parse_entry(struct ODVDDvdFile *dfile);
 
+void odv_dvd_info(struct ODVDDvdFile *dfile);
+void odv_dvd_close(struct ODVDDvdFile *dfile);
+
 void *odv_dvd_parse_misc(struct ODVDDvdFile *misc);
 void odv_dvd_misc_info(const struct ODVDvdMisc *misc);
 void odv_dvd_clean_misc(struct ODVDvdMisc *misc);
@@ -64,9 +74,10 @@ void *odv_dvd_parse_bgnd(struct ODVDDvdFile *dfile);
 void odv_dvd_bgnd_info(const struct ODVDvdBgnd *bgnd);
 void odv_dvd_clean_bgnd(struct ODVDvdBgnd *bgnd);
 
-void odv_dvd_info(struct ODVDDvdFile *dfile);
+void *odv_dvd_parse_scrp(struct ODVDDvdFile *dfile);
+void *odv_dvd_parse_scrp_entry(struct ODVDDvdFile *dfile);
+void odv_dvd_scrp_info(const struct ODVDvdScrp *scrp);
+void odv_dvd_clean_scrp(struct ODVDvdScrp *scrp);
 
-
-void odv_dvd_close(struct ODVDDvdFile *dfile);
 
 #endif /* OPENDV_DVD_HANDLER_H */
