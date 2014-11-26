@@ -7,6 +7,7 @@
 
 #include "odv_file.h"
 #include "odv_utils.h"
+#include "odv_image.h"
 
 #define RESOURCE_SIGNATURE 0x53455253
 #define RESOURCE_VERSION 0x00000100
