@@ -36,12 +36,34 @@ int odv_dvd_parse(struct ODVDDvdFile *dfile)
     return 1;
 }
 
+int odv_dvd_add_entry(struct ODVDDvdFile *dfile, void *entry, unsigned int signature)
+{
+    struct ODVDDvdEntry *dvdentry = NULL;
+
+    dfile->entries = realloc(dfile->entries, sizeof (struct ODVDDvdEntry *) * (dfile->nbentry + 1));
+    if (dfile->entries == NULL) {
+        fprintf(stderr, "[-] odv_dvd_add_entry - realloc failed\n");
+        return 0;
+    }
+    dvdentry = calloc(1, sizeof (struct ODVDDvdEntry));
+    if (dvdentry == NULL) {
+        fprintf(stderr, "[-] odv_dvd_add_entry - calloc failed\n");
+        return 0;
+    }
+    dvdentry->signature = signature;
+    dvdentry->data = entry;
+    dfile->entries[dfile->nbentry] = dvdentry;
+    dfile->nbentry = dfile->nbentry + 1;
+    return 1;
+}
+
 int odv_dvd_parse_entry(struct ODVDDvdFile *dfile)
 {
     unsigned int signature;
     unsigned int length;
     size_t numberofbytesread = 0;
     unsigned int saved_pos = 0;
+    void *entry = NULL;
 
     if (dfile == NULL)
         return 0;
@@ -56,16 +78,23 @@ int odv_dvd_parse_entry(struct ODVDDvdFile *dfile)
         return 0;
     }
     saved_pos = dfile->file->pos;
-    /* printf("[+] signature: 0x%08X\n", signature); */
     switch (signature) {
         case MISC_SIGNATURE:
-            if (odv_dvd_parse_misc(dfile) == 0)
+            if ((entry = odv_dvd_parse_misc(dfile)) == NULL)
                 return 0;
+            if (odv_dvd_add_entry(dfile, entry, MISC_SIGNATURE) == 0) {
+                free(entry);
+                return 0;
+            }
         break;
 
         case BGND_SIGNATURE:
-            if (odv_dvd_parse_bgnd(dfile) == 0)
+            if ((entry = odv_dvd_parse_bgnd(dfile)) == NULL)
                 return 0;
+            if (odv_dvd_add_entry(dfile, entry, BGND_SIGNATURE) == 0) {
+                free(entry);
+                return 0;
+            }
         break;
 
         default:
@@ -78,47 +107,67 @@ int odv_dvd_parse_entry(struct ODVDDvdFile *dfile)
 
 void odv_dvd_info(struct ODVDDvdFile *dfile)
 {
+    unsigned int i;
+
     if (dfile == NULL)
         return;
+    if (dfile->entries != NULL) {
+        for (i = 0; i < dfile->nbentry; i++) {
+            if (dfile->entries[i] != NULL) {
+                switch (dfile->entries[i]->signature) {
+                    case MISC_SIGNATURE:
+                        odv_dvd_misc_info(dfile->entries[i]->data);
+                    break;
+
+                    case BGND_SIGNATURE:
+                        odv_dvd_bgnd_info(dfile->entries[i]->data);
+                    break;
+
+                    default:
+                        fprintf(stderr, "[-] odv_dvd_info - unknow signature %08X\n", dfile->entries[i]->signature);
+                }
+            }
+        }
+    }
 }
 
-int odv_dvd_parse_misc(struct ODVDDvdFile *dfile)
+void *odv_dvd_parse_misc(struct ODVDDvdFile *dfile)
 {
     unsigned int version;
     size_t numberofbytesread = 0;
     struct ODVDvdMisc *misc = NULL;
 
     if (dfile == NULL)
-        return 0;
+        return NULL;
     numberofbytesread = odv_file_read(dfile->file, &version, 4);
     if (numberofbytesread != 4) {
         fprintf(stderr, "[-] odv_dvd_parse_misc - file read 4 failed\n");
-        return 0;
+        return NULL;
     }
     if (version != 6) {
         fprintf(stderr, "[-] odv_dvd_parse_misc - version not valid\n");
-        return 0;
+        return NULL;
     }
     misc = calloc(1, sizeof (struct ODVDvdMisc));
     if (misc == NULL) {
         fprintf(stderr, "[-] odv_dvd_parse_misc - calloc failed\n");
-        return 0;
+        return NULL;
     }
     numberofbytesread = odv_file_read(dfile->file, misc, sizeof (struct ODVDvdMisc) - (sizeof (unsigned short) * 2));
     if (numberofbytesread != (sizeof (struct ODVDvdMisc) - (sizeof (unsigned short) * 2))) {
         fprintf(stderr, "[-] odv_dvd_parse_misc - file read %d failed\n", sizeof (struct ODVDvdMisc) - (sizeof (unsigned short) * 2));
         free(misc);
-        return 0;
+        return NULL;
     }
     if (misc->unk_byte_04 == 1) {
         numberofbytesread = odv_file_read(dfile->file, &misc->unk_word_04, sizeof (unsigned short) * 2);
         if (numberofbytesread != (sizeof (unsigned short) * 2)) {
             fprintf(stderr, "[-] odv_dvd_parse_misc - file read %d failed\n", sizeof (unsigned short) * 2);
             free(misc);
-            return 0;
+            return NULL;
         }
     }
-    return 1;
+    return misc;
 }
 
 void odv_dvd_misc_info(const struct ODVDvdMisc *misc)
@@ -146,14 +195,14 @@ void odv_dvd_misc_info(const struct ODVDvdMisc *misc)
     printf("[----------------------------]\n");
 }
 
-void odv_dvd_misc_clean(struct ODVDvdMisc *misc)
+void odv_dvd_clean_misc(struct ODVDvdMisc *misc)
 {
     if (misc == NULL)
         return;
     free(misc);
 }
 
-int odv_dvd_parse_bgnd(struct ODVDDvdFile *dfile)
+void *odv_dvd_parse_bgnd(struct ODVDDvdFile *dfile)
 {
     unsigned int version;
     unsigned short filename_length = 0;
@@ -162,46 +211,46 @@ int odv_dvd_parse_bgnd(struct ODVDDvdFile *dfile)
     struct ODVDvdBgnd *bgnd = NULL;
 
     if (dfile == NULL)
-        return 0;
+        return NULL;
     numberofbytesread = odv_file_read(dfile->file, &version, 4);
     if (numberofbytesread != 4) {
         fprintf(stderr, "[-] odv_dvd_parse_bgnd - file read 4 failed\n");
-        return 0;
+        return NULL;
     }
     if (version != 4) {
         fprintf(stderr, "[-] odv_dvd_parse_bgnd - version not valid\n");
-        return 0;
+        return NULL;
     }
     numberofbytesread = odv_file_read(dfile->file, &filename_length, 2);
     if (numberofbytesread != 2) {
         fprintf(stderr, "[-] odv_dvd_parse_bgnd - file read 2 failed\n");
-        return 0;
+        return NULL;
     }
     filename = calloc(1, filename_length + 1);
     if (filename == NULL) {
         fprintf(stderr, "[-] odv_dvd_parse_bgnd - calloc failed\n");
-        return 0;
+        return NULL;
     }
     numberofbytesread = odv_file_read(dfile->file, filename, filename_length);
     if (numberofbytesread != filename_length) {
         fprintf(stderr, "[-] odv_dvd_parse_bgnd - file read %d failed\n", filename_length);
         free(filename);
-        return 0;
+        return NULL;
     }
     bgnd = calloc(1, sizeof (struct ODVDvdBgnd));
     if (bgnd == NULL) {
         fprintf(stderr, "[-] odv_dvd_parse_bgnd - calloc failed\n");
         free(filename);
-        return 0;
+        return NULL;
     }
     bgnd->filename = filename; /* .dvm */
     bgnd->img = odv_image_parse(dfile->file);
     if (bgnd->img == NULL) {
         free(filename);
         free(bgnd);
-        return 0;
+        return NULL;
     }
-    return 1;
+    return bgnd;
 }
 
 void odv_dvd_bgnd_info(const struct ODVDvdBgnd *bgnd)
@@ -214,7 +263,7 @@ void odv_dvd_bgnd_info(const struct ODVDvdBgnd *bgnd)
     printf("[----------------------------]\n");
 }
 
-void odv_dvd_bgnd_clean(struct ODVDvdBgnd *bgnd)
+void odv_dvd_clean_bgnd(struct ODVDvdBgnd *bgnd)
 {
     if (bgnd == NULL)
         return;
@@ -227,9 +276,34 @@ void odv_dvd_bgnd_clean(struct ODVDvdBgnd *bgnd)
 
 void odv_dvd_close(struct ODVDDvdFile *dfile)
 {
+    unsigned int i;
+
     if (dfile == NULL)
         return;
     if (dfile->file != NULL)
         odv_file_close(dfile->file);
+    if (dfile->entries != NULL) {
+        for (i = 0; i < dfile->nbentry; i++) {
+            if (dfile->entries[i] != NULL) {
+                switch (dfile->entries[i]->signature) {
+                    case MISC_SIGNATURE:
+                        odv_dvd_clean_misc(dfile->entries[i]->data);
+                        free(dfile->entries[i]);
+                        dfile->entries[i] = NULL;
+                    break;
+
+                    case BGND_SIGNATURE:
+                        odv_dvd_clean_bgnd(dfile->entries[i]->data);
+                        free(dfile->entries[i]);
+                        dfile->entries[i] = NULL;
+                    break;
+
+                    default:
+                        fprintf(stderr, "[-] odv_dvd_close - unknow signature %08X\n", dfile->entries[i]->signature);
+                }
+            }
+        }
+        free(dfile->entries);
+    }
     free(dfile);
 }

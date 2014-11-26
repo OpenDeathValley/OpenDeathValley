@@ -70,7 +70,7 @@ void odv_image_info(const struct ODVImage *img)
     printf("height: 0x%04X\n", img->height);
     printf("type_compression: 0x%08X\n", img->type_compression);
     printf("data_size: 0x%08X\n", img->data_size);
-    printf("[---------------------------------]\n");
+    printf("[-------------------------]\n");
 }
 
 int odv_image_get_r(short x)

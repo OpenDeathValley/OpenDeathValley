@@ -34,26 +34,35 @@ struct ODVDvdMisc
 
 struct ODVDvdBgnd
 {
+    unsigned int signature;
     unsigned char *filename;    /* .dvm */
     struct ODVImage *img;
+};
+
+struct ODVDDvdEntry
+{
+    unsigned int signature;
+    void *data;
 };
 
 struct ODVDDvdFile
 {
     struct ODVFile *file;
+    unsigned int nbentry;
+    struct ODVDDvdEntry **entries;
 };
 
 struct ODVDDvdFile *odv_dvd_open(const char *filename);
 int odv_dvd_parse(struct ODVDDvdFile *dfile);
 int odv_dvd_parse_entry(struct ODVDDvdFile *dfile);
 
-int odv_dvd_parse_misc(struct ODVDDvdFile *misc);
+void *odv_dvd_parse_misc(struct ODVDDvdFile *misc);
 void odv_dvd_misc_info(const struct ODVDvdMisc *misc);
-void odv_dvd_misc_clean(struct ODVDvdMisc *misc);
+void odv_dvd_clean_misc(struct ODVDvdMisc *misc);
 
-int odv_dvd_parse_bgnd(struct ODVDDvdFile *dfile);
+void *odv_dvd_parse_bgnd(struct ODVDDvdFile *dfile);
 void odv_dvd_bgnd_info(const struct ODVDvdBgnd *bgnd);
-void odv_dvd_bgnd_clean(struct ODVDvdBgnd *bgnd);
+void odv_dvd_clean_bgnd(struct ODVDvdBgnd *bgnd);
 
 void odv_dvd_info(struct ODVDDvdFile *dfile);
 
