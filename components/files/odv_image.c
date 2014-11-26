@@ -73,6 +73,26 @@ void odv_image_info(const struct ODVImage *img)
     printf("[---------------------------------]\n");
 }
 
+int odv_image_get_r(short x)
+{
+    return ((x >> 8) & 0xF8);
+}
+
+int odv_image_get_g(short x)
+{
+    return ((x >> 3) & 0xFC);
+}
+
+int odv_image_get_b(short x)
+{
+    return ((x << 3) & 0xFF);
+}
+
+short odv_image_to_rgb(int r, int g, int b)
+{
+    return (short)(((r << 8) & 0xf800) | ((g << 3) & 0x07e0) | (b >> 3));
+}
+
 void odv_image_clean(struct ODVImage *img)
 {
     if (img == NULL)

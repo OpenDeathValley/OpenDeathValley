@@ -18,6 +18,11 @@ struct ODVImage
 
 struct ODVImage *odv_image_parse(struct ODVFile *file);
 void odv_image_info(const struct ODVImage *img);
+int odv_image_get_r(short x);
+int odv_image_get_g(short x);
+int odv_image_get_b(short x);
+short odv_image_to_rgb(int r, int g, int b);
+
 void odv_image_clean(struct ODVImage *img);
 
 #endif /* OPENDV_IMAGE_H */
