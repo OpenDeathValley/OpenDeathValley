@@ -34,6 +34,19 @@ void odv_test_script(const char *filename)
     odv_scb_close(sfile);
 }
 
+void odv_test_dvd(const char *filename)
+{
+    struct ODVDDvdFile *dfile = NULL;
+
+    fprintf(stderr, "[+] odv_test_dvd = %s\n", filename);
+    dfile = odv_dvd_open(filename);
+    if (dfile == NULL)
+        return;
+    odv_dvd_info(dfile);
+    odv_dvd_close(dfile);
+}
+
+
 void odv_test_fxg(const char *filename)
 {
     struct ODVSoundFXGFile *sfile = NULL;
@@ -49,6 +62,7 @@ void help(void)
     printf("OPTION:\n");
     printf("\t-r: resource file (*.res)\n");
     printf("\t-s: script file (*.scb)\n");
+    printf("\t-d: dvd file (*.dvd)\n");
     printf("\t-f: ??? (*.fxg)\n");
     exit(EXIT_FAILURE);
 }
@@ -68,6 +82,9 @@ int main(int argc, char *argv[])
             break;
         case 's':
             odv_test_script(argv[2]);
+            break;
+        case 'd':
+            odv_test_dvd(argv[2]);
             break;
         case 'f':
             odv_test_fxg(argv[2]);
