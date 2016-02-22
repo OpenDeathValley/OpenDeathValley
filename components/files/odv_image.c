@@ -9,6 +9,9 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
     unsigned int type_compression;
     unsigned int data_size;
     unsigned char *buf = NULL;
+    unsigned char *buf_ucomp = 0x00;
+    uLongf length_dst = 0x00;
+    int zlib_return = 0;
 
     numberofbytesread = odv_file_read(file, &width, 2);
     if (numberofbytesread != 2) {
@@ -52,12 +55,48 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
     img->type_compression = type_compression;
     /*
         TODO: ADD CODE TO UNCOMPRESS
-        - 0: RAW ?
-        - 1: ZLIB
         - 2: BZ2
     */
-    img->data_size = data_size;
-    img->buf = buf;
+    if (img->type_compression == 0x00) {
+        /* RAW */
+        img->data_size = data_size;
+        img->buf = buf;
+    }
+    else if (img->type_compression == 0x01) {
+        /* ZLIB */
+        length_dst = img->width * img->height * 3;
+        buf_ucomp = calloc(length_dst, sizeof (char));
+        if (buf_ucomp == NULL) {
+            fprintf(stderr, "[-] odv_image_parse - calloc failed\n");
+            free(img);
+            free(buf);
+            return NULL;
+        }
+        zlib_return = uncompress(buf_ucomp, &length_dst, buf, data_size);
+        if (zlib_return != Z_OK) {
+            fprintf(stderr, "[-] uncompress - uncompress failed : %d\n", zlib_return);
+            free(buf_ucomp);
+            free(img);
+            free(buf);
+            return NULL;
+        }
+        img->buf = buf_ucomp;
+        img->data_size = length_dst;
+        free(buf);
+    }
+    else if (img->type_compression == 0x02) {
+        /* BZ2 */
+        fprintf(stderr, "[-] odv_image_parse - BZ2 not supported yet\n");
+        free(img);
+        free(buf);
+        return NULL;
+    }
+    else {
+        fprintf(stderr, "[-] odv_image_parse - %d type compression not supported\n", img->type_compression);
+        free(img);
+        free(buf);
+        return NULL;
+    }
     return img;
 }
 
