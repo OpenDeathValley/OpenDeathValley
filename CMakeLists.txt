@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${PROJECT_BINARY_DIR}/bin)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeTests)
+
 macro(replace_flags var these those)
     if ("${${var}}" MATCHES "${these}")
         string(REGEX REPLACE "${these}" "${those}" ${var} "${${var}}")
@@ -49,6 +51,9 @@ if (ZLIB_FOUND)
     include_directories(${ZLIB_INCLUDE_DIRS})
     SET(LINK_LIBS ${LINK_LIBS} ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
+
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIR})
 
 add_subdirectory(components/files)
 add_subdirectory(apps/files_test)

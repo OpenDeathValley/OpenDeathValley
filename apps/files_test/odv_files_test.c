@@ -84,7 +84,7 @@ void help(void)
 int main(int argc, char *argv[])
 {
     if (argc < 3) {
-        fprintf(stderr, "[-] Usage: %s OPTION FILE\n", argv[1]);
+        fprintf(stderr, "[-] Usage: %s OPTION FILE\n", argv[0]);
         help();
     }
     if (argv[1][0] != '-') {
