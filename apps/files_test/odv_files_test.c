@@ -55,6 +55,19 @@ void odv_test_fxg(const char *filename)
     sfile = odv_fxg_open(filename);
     if (sfile == NULL)
         return;
+    odv_fxg_close(sfile);
+}
+
+void odv_test_map(const char *filename)
+{
+    struct ODVMap *mfile = NULL;
+
+    fprintf(stderr, "[+] odv_map_open = %s\n", filename);
+    mfile = odv_map_open(filename);
+    if (mfile == NULL)
+        return;
+    odv_map_info(mfile);
+    odv_map_close(mfile);
 }
 
 void help(void)
@@ -63,7 +76,8 @@ void help(void)
     printf("\t-r: resource file (*.res)\n");
     printf("\t-s: script file (*.scb)\n");
     printf("\t-d: dvd file (*.dvd)\n");
-    printf("\t-f: ??? (*.fxg)\n");
+    printf("\t-f: Sound bank (*.fxg)\n");
+    printf("\t-m: map (*.map)\n");
     exit(EXIT_FAILURE);
 }
 
@@ -88,6 +102,9 @@ int main(int argc, char *argv[])
             break;
         case 'f':
             odv_test_fxg(argv[2]);
+            break;
+        case 'm':
+            odv_test_map(argv[2]);
             break;
         default:
             help();
