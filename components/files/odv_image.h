@@ -8,7 +8,7 @@
 #include "odv_file.h"
 
 #include <zlib.h>
-//#include <unistd.h>
+#include <bzlib.h>
 
 struct ODVImage
 {

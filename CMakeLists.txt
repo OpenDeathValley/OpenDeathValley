@@ -52,6 +52,12 @@ if (ZLIB_FOUND)
     SET(LINK_LIBS ${LINK_LIBS} ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
 
+find_package (BZip2 REQUIRED)
+if (BZIP2_FOUND)
+  include_directories(${BZIP_INCLUDE_DIRS})
+  SET(LINK_LIBS ${LINK_LIBS} ${BZIP2_LIBRARIES})
+endif (BZIP2_FOUND)
+
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 

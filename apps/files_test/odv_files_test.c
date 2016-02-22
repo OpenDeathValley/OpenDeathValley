@@ -70,6 +70,18 @@ void odv_test_map(const char *filename)
     odv_map_close(mfile);
 }
 
+void odv_test_dvm(const char *filename)
+{
+    struct ODVDvm *dvm = NULL;
+
+    fprintf(stderr, "[+] odv_dvm_open = %s\n", filename);
+    dvm = odv_dvm_open(filename);
+    if (dvm == NULL)
+        return;
+    odv_dvm_info(dvm);
+    odv_dvm_close(dvm);
+}
+
 void help(void)
 {
     printf("OPTION:\n");
@@ -77,7 +89,8 @@ void help(void)
     printf("\t-s: script file (*.scb)\n");
     printf("\t-d: dvd file (*.dvd)\n");
     printf("\t-f: Sound bank (*.fxg)\n");
-    printf("\t-m: map (*.map)\n");
+    printf("\t-m: map interface (*.map)\n");
+    printf("\t-v: map (*.dvm)\n");
     exit(EXIT_FAILURE);
 }
 
@@ -105,6 +118,9 @@ int main(int argc, char *argv[])
             break;
         case 'm':
             odv_test_map(argv[2]);
+            break;
+        case 'v':
+            odv_test_dvm(argv[2]);
             break;
         default:
             help();
