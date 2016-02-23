@@ -53,10 +53,6 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
     img->width = width;
     img->height = height;
     img->type_compression = type_compression;
-    /*
-        TODO: ADD CODE TO UNCOMPRESS
-        - 2: BZ2
-    */
     if (img->type_compression == 0x00) {
         /* RAW */
         img->data_size = data_size;

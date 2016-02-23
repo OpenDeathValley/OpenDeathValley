@@ -63,12 +63,12 @@ SDL_Texture *odv_sdl_sxt(const char *filename, SDL_Renderer *renderer)
     struct ODVSxt *sxt = NULL;
     SDL_Surface *surface = NULL;
     SDL_Texture *tex = NULL;
-
+    
     fprintf(stderr, "[+] odv_sxt_open = %s\n", filename);
     sxt = odv_sxt_open(filename);
     if (sxt == NULL)
         return NULL;
-    surface = SDL_CreateRGBSurface(0, sxt->img->width, sxt->img->height, 16, 0, 0, 0, 0);
+    surface = SDL_CreateRGBSurface(0, sxt->img->width * 2, sxt->img->height, 16, 0x00, 0x00, 0x00, 0x00);
     if (surface == NULL) {
         fprintf(stderr, "[-] SDL_CreateRGBSurface error: %s\n", SDL_GetError());
         return NULL;

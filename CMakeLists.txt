@@ -62,4 +62,5 @@ find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 
 add_subdirectory(components/files)
+add_subdirectory(components/sdlutil)
 add_subdirectory(apps/files_test)

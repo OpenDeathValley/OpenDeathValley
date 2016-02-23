@@ -1,4 +1,3 @@
-
 set(ODV_FILES_SRC
     odv_file.c
     odv_fxg_handler.c
@@ -20,5 +19,5 @@ set(ODV_FILES_SRC
     odv_scb_handler.c
     odv_utils.c)
     
-add_library(odv_component_files ${ODV_FILES_SRC})
+add_library(odv_components_files ${ODV_FILES_SRC})
 
