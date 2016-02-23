@@ -8,16 +8,20 @@ SDL_Texture *odv_sdl_map(const char *filename, SDL_Renderer *renderer)
 
     fprintf(stderr, "[+] odv_map_open = %s\n", filename);
     mfile = odv_map_open(filename);
-    if (mfile == NULL)
+    if (mfile == NULL || mfile->imgmap->image_count == 0)
         return NULL;
-    surface = SDL_CreateRGBSurface(0, mfile->img->width, mfile->img->height, 16, 0, 0, 0, 0);
+    surface = odv_image_to_surface(mfile->imgmap->images[0]);
     if (surface == NULL) {
-        fprintf(stderr, "[-] SDL_CreateRGBSurface error: %s\n", SDL_GetError());
         return NULL;
     }
-    SDL_LockSurface(surface);
-    memcpy(surface->pixels, mfile->img->buf, mfile->img->width * mfile->img->height * 2);
-    SDL_UnlockSurface(surface);
+    /* surface = SDL_CreateRGBSurface(0, mfile->img->width, mfile->img->height, 16, 0, 0, 0, 0); */
+    /* if (surface == NULL) {                                                                    */
+    /*     fprintf(stderr, "[-] SDL_CreateRGBSurface error: %s\n", SDL_GetError());              */
+    /*     return NULL;                                                                          */
+    /* }                                                                                         */
+    /* SDL_LockSurface(surface);                                                                 */
+    /* memcpy(surface->pixels, mfile->img->buf, mfile->img->width * mfile->img->height * 2);     */
+    /* SDL_UnlockSurface(surface);                                                               */
     tex = SDL_CreateTextureFromSurface(renderer, surface);
     if (tex == NULL) {
         fprintf(stderr, "[-] SDL_CreateTextureFromSurface error: %s\n", SDL_GetError());
@@ -37,16 +41,20 @@ SDL_Texture *odv_sdl_dvm(const char *filename, SDL_Renderer *renderer)
 
     fprintf(stderr, "[+] odv_dvm_open = %s\n", filename);
     dvm = odv_dvm_open(filename);
-    if (dvm == NULL)
+    if (dvm == NULL || dvm->imgmap->image_count == 0)
         return NULL;
-    surface = SDL_CreateRGBSurface(0, dvm->img->width, dvm->img->height, 16, 0, 0, 0, 0);
+    surface = odv_image_to_surface(dvm->imgmap->images[0]);
     if (surface == NULL) {
-        fprintf(stderr, "[-] SDL_CreateRGBSurface error: %s\n", SDL_GetError());
         return NULL;
     }
-    SDL_LockSurface(surface);
-    memcpy(surface->pixels, dvm->img->buf, dvm->img->width * dvm->img->height * 2);
-    SDL_UnlockSurface(surface);
+    /* surface = SDL_CreateRGBSurface(0, dvm->img->width, dvm->img->height, 16, 0, 0, 0, 0); */
+    /* if (surface == NULL) {                                                                */
+    /*     fprintf(stderr, "[-] SDL_CreateRGBSurface error: %s\n", SDL_GetError());          */
+    /*     return NULL;                                                                      */
+    /* }                                                                                     */
+    /* SDL_LockSurface(surface);                                                             */
+    /* memcpy(surface->pixels, dvm->img->buf, dvm->img->width * dvm->img->height * 2);       */
+    /* SDL_UnlockSurface(surface);                                                           */
     tex = SDL_CreateTextureFromSurface(renderer, surface);
     if (tex == NULL) {
         fprintf(stderr, "[-] SDL_CreateTextureFromSurface error: %s\n", SDL_GetError());
@@ -63,19 +71,16 @@ SDL_Texture *odv_sdl_sxt(const char *filename, SDL_Renderer *renderer)
     struct ODVSxt *sxt = NULL;
     SDL_Surface *surface = NULL;
     SDL_Texture *tex = NULL;
+    //int i, j;
     
     fprintf(stderr, "[+] odv_sxt_open = %s\n", filename);
     sxt = odv_sxt_open(filename);
     if (sxt == NULL)
         return NULL;
-    surface = SDL_CreateRGBSurface(0, sxt->img->width * 2, sxt->img->height, 16, 0x00, 0x00, 0x00, 0x00);
+    surface = odv_image_to_surface(sxt->imgmap->images[0]);
     if (surface == NULL) {
-        fprintf(stderr, "[-] SDL_CreateRGBSurface error: %s\n", SDL_GetError());
         return NULL;
     }
-    SDL_LockSurface(surface);
-    memcpy(surface->pixels, sxt->img->buf, sxt->img->width * sxt->img->height * 2);
-    SDL_UnlockSurface(surface);
     tex = SDL_CreateTextureFromSurface(renderer, surface);
     if (tex == NULL) {
         fprintf(stderr, "[-] SDL_CreateTextureFromSurface error: %s\n", SDL_GetError());
@@ -166,9 +171,11 @@ int main(int argc, char *argv[])
     if (argc < 3) {
         fprintf(stderr, "[-] Usage: %s OPTION FILE\n", argv[0]);
         help();
+        exit(EXIT_FAILURE);
     }
     if (argv[1][0] != '-') {
         help();
+        exit(EXIT_FAILURE);
     }
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
         fprintf(stderr, "[-] SDL_Init error: %s\n", SDL_GetError());

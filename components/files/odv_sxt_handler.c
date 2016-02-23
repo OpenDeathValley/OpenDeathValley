@@ -17,8 +17,8 @@ struct ODVSxt *odv_sxt_open(const char *filename)
         return NULL;
     }
     sxt->file = file;
-    sxt->img = odv_image_parse(sxt->file);
-    if (sxt->img == NULL) {
+    sxt->imgmap = odv_imagemap_new(sxt->file);
+    if (sxt->imgmap == NULL) {
         odv_sxt_close(sxt);
         return NULL;
     }
@@ -30,7 +30,7 @@ void odv_sxt_info(const struct ODVSxt *sxt)
     if (sxt == NULL)
         return;
     printf("[- ODV SXT information -]\n");
-    odv_image_info(sxt->img);
+    odv_imagemap_info(sxt->imgmap);
     printf("[---------------------------------]\n");
 }
 
@@ -40,7 +40,7 @@ void odv_sxt_close(struct ODVSxt *sxt)
         return;
     if (sxt->file != NULL)
         odv_file_close(sxt->file);
-    if (sxt->img != NULL)
-        odv_image_clean(sxt->img);
+    if (sxt->imgmap != NULL)
+        odv_imagemap_clean(sxt->imgmap);
     free(sxt);
 }

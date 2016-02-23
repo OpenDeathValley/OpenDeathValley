@@ -17,8 +17,8 @@ struct ODVDvm *odv_dvm_open(const char *filename)
         return NULL;
     }
     dvm->file = file;
-    dvm->img = odv_image_parse(dvm->file);
-    if (dvm->img == NULL) {
+    dvm->imgmap = odv_imagemap_new(dvm->file);
+    if (dvm->imgmap == NULL) {
         odv_dvm_close(dvm);
         return NULL;
     }
@@ -30,7 +30,7 @@ void odv_dvm_info(const struct ODVDvm *dvm)
     if (dvm == NULL)
         return;
     printf("[- ODV DVM information -]\n");
-    odv_image_info(dvm->img);
+    odv_imagemap_info(dvm->imgmap);
     printf("[---------------------------------]\n");
 }
 
@@ -40,7 +40,7 @@ void odv_dvm_close(struct ODVDvm *dvm)
         return;
     if (dvm->file != NULL)
         odv_file_close(dvm->file);
-    if (dvm->img != NULL)
-        odv_image_clean(dvm->img);
+    if (dvm->imgmap != NULL)
+        odv_imagemap_clean(dvm->imgmap);
     free(dvm);
 }

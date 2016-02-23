@@ -5,12 +5,12 @@
 #include <stdio.h>
 
 #include "odv_file.h"
-#include "odv_image.h"
+#include "odv_imagemap.h"
 
 struct ODVSxt
 {
     struct ODVFile *file;
-    struct ODVImage *img;
+    struct ODVImageMap *imgmap;
 };
 
 struct ODVSxt *odv_sxt_open(const char *filename);

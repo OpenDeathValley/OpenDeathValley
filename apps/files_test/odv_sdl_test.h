@@ -11,4 +11,6 @@
 #include "odv_dvm_handler.h"
 #include "odv_sxt_handler.h"
 
+#include "odv_image_to_surface.h"
+
 #endif /* OPENDV_TEST_H */

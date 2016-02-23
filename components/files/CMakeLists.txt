@@ -11,6 +11,7 @@ set(ODV_FILES_SRC
     odv_resource_nptf.c
     odv_resource_rdo.c
     odv_image.c
+    odv_imagemap.c
     odv_map_handler.c
     odv_dvd_handler.c
     odv_dvm_handler.c

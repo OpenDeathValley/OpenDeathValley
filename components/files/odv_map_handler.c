@@ -17,8 +17,8 @@ struct ODVMap *odv_map_open(const char *filename)
         return NULL;
     }
     mfile->file = file;
-    mfile->img = odv_image_parse(mfile->file);
-    if (mfile->img == NULL) {
+    mfile->imgmap = odv_imagemap_new(mfile->file);
+    if (mfile->imgmap == NULL) {
         odv_map_close(mfile);
         return NULL;
     }
@@ -30,7 +30,7 @@ void odv_map_info(const struct ODVMap *map)
     if (map == NULL)
         return;
     printf("[- ODV MAP information -]\n");
-    odv_image_info(map->img);
+    odv_imagemap_info(map->imgmap);
     printf("[---------------------------------]\n");
 }
 
@@ -40,7 +40,7 @@ void odv_map_close(struct ODVMap *mfile)
         return;
     if (mfile->file != NULL)
         odv_file_close(mfile->file);
-    if (mfile->img != NULL)
-        odv_image_clean(mfile->img);
+    if (mfile->imgmap != NULL)
+        odv_imagemap_clean(mfile->imgmap);
     free(mfile);
 }

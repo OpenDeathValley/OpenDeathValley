@@ -9,7 +9,7 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
     unsigned int type_compression;
     unsigned int data_size;
     unsigned char *buf = NULL;
-    unsigned char *buf_ucomp = 0x00;
+    unsigned char *buf_ucomp = NULL;
     uLongf length_dst = 0x00;
     int uncomp_return = 0;
 
@@ -94,24 +94,6 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
         img->data_size = length_dst;
         free(buf);
     }
-    //else if (img->type_compression == 0x02) {
-    //    /* BZ2 */
-    //    length_dst = img->width * img->height * 3;
-    //    buf_ucomp = calloc(length_dst, sizeof (char));
-    //    if (buf_ucomp == NULL) {
-    //        fprintf(stderr, "[-] odv_image_parse - calloc failed\n");
-    //        free(img);
-    //        free(buf);
-    //        return NULL;
-    //    }
-    //    
-    //    
-    //    
-    //    fprintf(stderr, "[-] odv_image_parse - BZ2 not supported yet\n");
-    //    free(img);
-    //    free(buf);
-    //    return NULL;
-    //}
     else {
         fprintf(stderr, "[-] odv_image_parse - %d type compression not supported\n", img->type_compression);
         free(img);
