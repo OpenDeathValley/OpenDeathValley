@@ -7,6 +7,9 @@
 
 #include "odv_file.h"
 
+#include <zlib.h>
+#include <bzlib.h>
+
 struct ODVImage
 {
     unsigned short width;

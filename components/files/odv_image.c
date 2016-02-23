@@ -9,6 +9,9 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
     unsigned int type_compression;
     unsigned int data_size;
     unsigned char *buf = NULL;
+    unsigned char *buf_ucomp = NULL;
+    uLongf length_dst = 0x00;
+    int uncomp_return = 0;
 
     numberofbytesread = odv_file_read(file, &width, 2);
     if (numberofbytesread != 2) {
@@ -50,14 +53,53 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
     img->width = width;
     img->height = height;
     img->type_compression = type_compression;
-    /*
-        TODO: ADD CODE TO UNCOMPRESS
-        - 0: RAW ?
-        - 1: ZLIB
-        - 2: BZ2
-    */
-    img->data_size = data_size;
-    img->buf = buf;
+    if (img->type_compression == 0x00) {
+        /* RAW */
+        img->data_size = data_size;
+        img->buf = buf;
+    }
+    else if (img->type_compression == 0x01 || img->type_compression == 0x02) {
+        /* ZLIB OR BZ2 */
+        length_dst = img->width * img->height * 2;  /* R5G6B */
+        buf_ucomp = calloc(length_dst, sizeof (char));
+        if (buf_ucomp == NULL) {
+            fprintf(stderr, "[-] odv_image_parse - calloc failed\n");
+            free(img);
+            free(buf);
+            return NULL;
+        }
+        if (img->type_compression == 0x01) {
+            /* ZLIB */
+            uncomp_return = uncompress(buf_ucomp, &length_dst, buf, data_size);
+            if (uncomp_return != Z_OK) {
+                fprintf(stderr, "[-] odv_image_parse - uncompress failed : %d\n", uncomp_return);
+                free(buf_ucomp);
+                free(img);
+                free(buf);
+                return NULL;
+            }
+        }
+        else if (img->type_compression == 0x02) {
+            /* BZ2 */
+            uncomp_return = BZ2_bzBuffToBuffDecompress((char*)buf_ucomp, (unsigned int*)&length_dst, (char*)buf, data_size, 0x00, 0x00);
+            if (uncomp_return != BZ_OK) {
+                fprintf(stderr, "[-] odv_image_parse - BZ2_bzBuffToBuffDecompress failed : %d\n", uncomp_return);
+                free(buf_ucomp);
+                free(img);
+                free(buf);
+                return NULL;
+            }
+        }
+        img->buf = buf_ucomp;
+        img->data_size = length_dst;
+        free(buf);
+    }
+    else {
+        fprintf(stderr, "[-] odv_image_parse - %d type compression not supported\n", img->type_compression);
+        free(img);
+        free(buf);
+        return NULL;
+    }
     return img;
 }
 
@@ -70,7 +112,7 @@ void odv_image_info(const struct ODVImage *img)
     printf("height: 0x%04X\n", img->height);
     printf("type_compression: 0x%08X\n", img->type_compression);
     printf("data_size: 0x%08X\n", img->data_size);
-    printf("[---------------------------------]\n");
+    printf("[-------------------------]\n");
 }
 
 int odv_image_get_r(short x)
