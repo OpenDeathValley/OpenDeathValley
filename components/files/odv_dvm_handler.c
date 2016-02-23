@@ -12,7 +12,7 @@ struct ODVDvm *odv_dvm_open(const char *filename)
     }
     dvm = calloc(1, sizeof (struct ODVDvm));
     if (dvm == NULL) {
-        fprintf(stderr, "[-] odv_dvm_open - malloc failed\n");
+        fprintf(stderr, "[-] odv_dvm_open - calloc failed\n");
         odv_file_close(file);
         return NULL;
     }

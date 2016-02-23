@@ -8,9 +8,9 @@ struct ODVFile *odv_file_open(const char *filename)
 
     if (filename == NULL)
         return NULL;
-    file = malloc(sizeof (struct ODVFile));
+    file = calloc(1, sizeof (struct ODVFile));
     if (file == NULL) {
-        fprintf(stderr, "[-] odv_file_open - malloc failed\n");
+        fprintf(stderr, "[-] odv_file_open - calloc failed\n");
         return NULL;
     }
     memset(file, 0, sizeof (struct ODVFile));
@@ -45,13 +45,13 @@ struct ODVFile *odv_file_open(const char *filename)
 struct ODVFile *odv_file_open(const char *filename)
 {
     struct ODVFile *file = NULL;
-	struct stat st;
+    struct stat st;
 
     if (filename == NULL)
         return NULL;
-    file = malloc(sizeof (struct ODVFile));
+    file = calloc(1, sizeof (struct ODVFile));
     if (file == NULL) {
-        fprintf(stderr, "[-] odv_file_open - malloc failed\n");
+        fprintf(stderr, "[-] odv_file_open - calloc failed\n");
         return NULL;
     }
     memset(file, 0, sizeof (struct ODVFile));

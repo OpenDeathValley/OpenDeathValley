@@ -12,7 +12,7 @@ struct ODVSxt *odv_sxt_open(const char *filename)
     }
     sxt = calloc(1, sizeof (struct ODVSxt));
     if (sxt == NULL) {
-        fprintf(stderr, "[-] odv_sxt_open - malloc failed\n");
+        fprintf(stderr, "[-] odv_sxt_open - calloc failed\n");
         odv_file_close(file);
         return NULL;
     }

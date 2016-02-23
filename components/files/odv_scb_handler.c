@@ -12,9 +12,9 @@ struct ODVSCBFile *odv_scb_open(const char *filename)
         fprintf(stderr, "[-] odv_scb_open - odv_file_open failed\n");
         return NULL;
     }
-    sfile = malloc(sizeof (struct ODVSCBFile));
+    sfile = calloc(1, sizeof (struct ODVSCBFile));
     if (sfile == NULL) {
-        fprintf(stderr, "[-] odv_scb_open - malloc failed\n");
+        fprintf(stderr, "[-] odv_scb_open - calloc failed\n");
         odv_file_close(file);
         return NULL;
     }
@@ -24,9 +24,9 @@ struct ODVSCBFile *odv_scb_open(const char *filename)
         odv_scb_close(sfile);
         return NULL;
     }
-    sfile->classes = malloc(sizeof(struct ODVSCBClass*) * sfile->nbclasses);
+    sfile->classes = calloc(sfile->nbclasses, sizeof(struct ODVSCBClass*));
     if (sfile->classes == NULL) {
-        fprintf(stderr, "[-] odv_scb_open - malloc failed\n");
+        fprintf(stderr, "[-] odv_scb_open - calloc failed\n");
         odv_scb_close(sfile);
         return NULL;
     }
@@ -78,9 +78,9 @@ struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
 
     if (sfile == NULL || sfile->file == NULL)
         return 0;
-    class = malloc(sizeof (struct ODVSCBClass));
+    class = calloc(1, sizeof (struct ODVSCBClass));
     if (class == NULL) {
-        fprintf(stderr, "[-] odv_scb_parse_class - malloc failed\n");
+        fprintf(stderr, "[-] odv_scb_parse_class - calloc failed\n");
         return NULL;
     }
     memset(class, 0, sizeof (struct ODVSCBClass));
@@ -107,9 +107,9 @@ struct ODVSCBClass *odv_scb_parse_class(struct ODVSCBFile *sfile)
         free(class);
         return NULL;
     }
-    class->funcs = malloc(sizeof(struct ODVSCBFunction*) * class->nboffunctions);
+    class->funcs = calloc(class->nboffunctions, sizeof(struct ODVSCBFunction*));
     if (class->funcs == NULL) {
-        fprintf(stderr, "[-] odv_scb_parse_class - malloc failed\n");
+        fprintf(stderr, "[-] odv_scb_parse_class - calloc failed\n");
         free(class);
         return NULL;
     }
@@ -134,9 +134,9 @@ struct ODVSCBFunction *odv_scb_parse_function(struct ODVSCBFile *sfile)
     struct ODVSCBFunction *func = NULL;
     char line[1024];
 
-    func = malloc(sizeof (struct ODVSCBFunction));
+    func = calloc(1, sizeof (struct ODVSCBFunction));
     if (func == NULL) {
-        fprintf(stderr, "[-] odv_scb_parse_function - malloc failed\n");
+        fprintf(stderr, "[-] odv_scb_parse_function - calloc failed\n");
         return NULL;
     }
     memset(func, 0, sizeof (struct ODVSCBFunction));
@@ -198,9 +198,9 @@ int odv_scb_parse_quad(struct ODVSCBFile *sfile, struct ODVSCBClass *class)
             fprintf(stderr, "[-] odv_scb_parse_quad - negative nbofquads\n");
             return 0;
         }
-        class->funcs[i]->bytecode = malloc((sizeof (char) * nbofquads) * 10);
+        class->funcs[i]->bytecode = calloc(nbofquads * 10, sizeof (char));
         if (class->funcs[i]->bytecode == NULL) {
-            fprintf(stderr, "[-] odv_scb_parse_quad - malloc failed\n");
+            fprintf(stderr, "[-] odv_scb_parse_quad - calloc failed\n");
             return 0;
         }
         numberofbytesread = odv_file_read(sfile->file, class->funcs[i]->bytecode, 10 * nbofquads);

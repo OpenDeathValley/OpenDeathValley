@@ -12,7 +12,7 @@ struct ODVMap *odv_map_open(const char *filename)
     }
     mfile = calloc(1, sizeof (struct ODVMap));
     if (mfile == NULL) {
-        fprintf(stderr, "[-] odv_map_open - malloc failed\n");
+        fprintf(stderr, "[-] odv_map_open - calloc failed\n");
         odv_file_close(file);
         return NULL;
     }

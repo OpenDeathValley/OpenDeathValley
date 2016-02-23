@@ -9,7 +9,12 @@ struct ODVImageMap *odv_imagemap_new(struct ODVFile *file)
     if (img == NULL) {
         return NULL;
     }
-    imgmap = malloc(sizeof (struct ODVImageMap));
+    imgmap = calloc(1, sizeof (struct ODVImageMap));
+    if (imgmap == NULL) {
+        fprintf(stderr, "[-] odv_imagemap_new - calloc failed\n");
+        odv_image_clean(img);
+        return NULL;
+    }
     imgmap->images = NULL;
     imgmap->image_count = 0;
     odv_imagemap_add(imgmap, img);
