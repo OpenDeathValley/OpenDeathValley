@@ -8,5 +8,6 @@
 #include "odv_map_handler.h"
 #include "odv_dvm_handler.h"
 #include "odv_sxt_handler.h"
+#include "odv_fnt_handler.h"
 
 #endif /* OPENDV_TEST_H */

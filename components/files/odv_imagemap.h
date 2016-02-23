@@ -14,7 +14,8 @@ struct ODVImageMap
 };
 
 struct ODVImageMap *odv_imagemap_new(struct ODVFile *file);
-void odv_imagemap_add(struct ODVImageMap *imgmap, struct ODVImage *img);
+int odv_imagemap_radd(struct ODVImageMap *imgmap, struct ODVFile *file);
+int odv_imagemap_add(struct ODVImageMap *imgmap, struct ODVImage *img);
 void odv_imagemap_info(const struct ODVImageMap *imgmap);
 void odv_imagemap_clean(struct ODVImageMap *imgmap);
 

@@ -71,8 +71,7 @@ SDL_Texture *odv_sdl_sxt(const char *filename, SDL_Renderer *renderer)
     struct ODVSxt *sxt = NULL;
     SDL_Surface *surface = NULL;
     SDL_Texture *tex = NULL;
-    //int i, j;
-    
+
     fprintf(stderr, "[+] odv_sxt_open = %s\n", filename);
     sxt = odv_sxt_open(filename);
     if (sxt == NULL)
@@ -92,11 +91,37 @@ SDL_Texture *odv_sdl_sxt(const char *filename, SDL_Renderer *renderer)
     return tex;
 }
 
+SDL_Texture *odv_sdl_fnt(const char *filename, SDL_Renderer *renderer)
+{
+    struct ODVFnt *fnt = NULL;
+    SDL_Surface *surface = NULL;
+    SDL_Texture *tex = NULL;
+
+    fprintf(stderr, "[+] odv_fnt_open = %s\n", filename);
+    fnt = odv_fnt_open(filename);
+    if (fnt == NULL)
+        return NULL;
+    /* Choice between 0 and 1 */
+    surface = odv_image_to_surface(fnt->imgmap->images[0]);
+    if (surface == NULL) {
+        return NULL;
+    }
+    tex = SDL_CreateTextureFromSurface(renderer, surface);
+    if (tex == NULL) {
+        fprintf(stderr, "[-] SDL_CreateTextureFromSurface error: %s\n", SDL_GetError());
+        SDL_FreeSurface(surface);
+        return NULL;
+    }
+    SDL_FreeSurface(surface);
+    odv_fnt_close(fnt);
+    return tex;
+}
+
 void odv_rend_texture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y)
 {
     int w, h;
     SDL_Rect dst;
-    
+
     SDL_QueryTexture(tex, NULL, NULL, &w, &h);
     dst.x = x;
     dst.y = y;
@@ -111,6 +136,7 @@ void help(void)
     printf("\t-m: map interface (*.map)\n");
     printf("\t-v: map (*.dvm)\n");
     printf("\t-x: screen win/loose (*.sxt)\n");
+    printf("\t-n: font (*.fnt)\n");
 }
 
 void sdl_loop(SDL_Window *win, SDL_Renderer *renderer, SDL_Texture *tex)
@@ -124,7 +150,7 @@ void sdl_loop(SDL_Window *win, SDL_Renderer *renderer, SDL_Texture *tex)
     int diff_y = 0x00;
     int pos_x = 0x00;
     int pos_y = 0x00;
-    
+
     SDL_ShowWindow(win);
     while (quit == 0x00) {
         while (SDL_PollEvent(&event)) {
@@ -166,7 +192,7 @@ int main(int argc, char *argv[])
     SDL_Window *win = NULL;
     SDL_Renderer *renderer = NULL;
     SDL_Texture *tex = NULL;
-    
+
 
     if (argc < 3) {
         fprintf(stderr, "[-] Usage: %s OPTION FILE\n", argv[0]);
@@ -202,6 +228,9 @@ int main(int argc, char *argv[])
             break;
         case 'x':
             tex = odv_sdl_sxt(argv[2], renderer);
+            break;
+        case 'n':
+            tex = odv_sdl_fnt(argv[2], renderer);
             break;
         default:
             help();

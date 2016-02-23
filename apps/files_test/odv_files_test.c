@@ -94,6 +94,18 @@ void odv_test_sxt(const char *filename)
     odv_sxt_close(sxt);
 }
 
+void odv_test_fnt(const char *filename)
+{
+    struct ODVFnt *fnt = NULL;
+
+    fprintf(stderr, "[+] odv_fnt_open = %s\n", filename);
+    fnt = odv_fnt_open(filename);
+    if (fnt == NULL)
+        return;
+    odv_fnt_info(fnt);
+    odv_fnt_close(fnt);
+}
+
 void help(void)
 {
     printf("OPTION:\n");
@@ -104,6 +116,7 @@ void help(void)
     printf("\t-m: map interface (*.map)\n");
     printf("\t-v: map (*.dvm)\n");
     printf("\t-x: screen win/loose (*.sxt)\n");
+    printf("\t-n: font (*.fnt)\n");
     exit(EXIT_FAILURE);
 }
 
@@ -137,6 +150,9 @@ int main(int argc, char *argv[])
             break;
         case 'x':
             odv_test_sxt(argv[2]);
+            break;
+        case 'n':
+            odv_test_fnt(argv[2]);
             break;
         default:
             help();
