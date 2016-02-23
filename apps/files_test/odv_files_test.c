@@ -82,6 +82,18 @@ void odv_test_dvm(const char *filename)
     odv_dvm_close(dvm);
 }
 
+void odv_test_sxt(const char *filename)
+{
+    struct ODVSxt *sxt = NULL;
+
+    fprintf(stderr, "[+] odv_sxt_open = %s\n", filename);
+    sxt = odv_sxt_open(filename);
+    if (sxt == NULL)
+        return;
+    odv_sxt_info(sxt);
+    odv_sxt_close(sxt);
+}
+
 void help(void)
 {
     printf("OPTION:\n");
@@ -91,6 +103,7 @@ void help(void)
     printf("\t-f: Sound bank (*.fxg)\n");
     printf("\t-m: map interface (*.map)\n");
     printf("\t-v: map (*.dvm)\n");
+    printf("\t-x: screen win/loose (*.sxt)\n");
     exit(EXIT_FAILURE);
 }
 
@@ -121,6 +134,9 @@ int main(int argc, char *argv[])
             break;
         case 'v':
             odv_test_dvm(argv[2]);
+            break;
+        case 'x':
+            odv_test_sxt(argv[2]);
             break;
         default:
             help();

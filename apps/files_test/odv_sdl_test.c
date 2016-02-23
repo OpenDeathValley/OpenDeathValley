@@ -35,7 +35,7 @@ SDL_Texture *odv_sdl_dvm(const char *filename, SDL_Renderer *renderer)
     SDL_Surface *surface = NULL;
     SDL_Texture *tex = NULL;
 
-    fprintf(stderr, "[+] odv_map_open = %s\n", filename);
+    fprintf(stderr, "[+] odv_dvm_open = %s\n", filename);
     dvm = odv_dvm_open(filename);
     if (dvm == NULL)
         return NULL;
@@ -58,6 +58,35 @@ SDL_Texture *odv_sdl_dvm(const char *filename, SDL_Renderer *renderer)
     return tex;
 }
 
+SDL_Texture *odv_sdl_sxt(const char *filename, SDL_Renderer *renderer)
+{
+    struct ODVSxt *sxt = NULL;
+    SDL_Surface *surface = NULL;
+    SDL_Texture *tex = NULL;
+
+    fprintf(stderr, "[+] odv_sxt_open = %s\n", filename);
+    sxt = odv_sxt_open(filename);
+    if (sxt == NULL)
+        return NULL;
+    surface = SDL_CreateRGBSurface(0, sxt->img->width, sxt->img->height, 16, 0, 0, 0, 0);
+    if (surface == NULL) {
+        fprintf(stderr, "[-] SDL_CreateRGBSurface error: %s\n", SDL_GetError());
+        return NULL;
+    }
+    SDL_LockSurface(surface);
+    memcpy(surface->pixels, sxt->img->buf, sxt->img->width * sxt->img->height * 2);
+    SDL_UnlockSurface(surface);
+    tex = SDL_CreateTextureFromSurface(renderer, surface);
+    if (tex == NULL) {
+        fprintf(stderr, "[-] SDL_CreateTextureFromSurface error: %s\n", SDL_GetError());
+        SDL_FreeSurface(surface);
+        return NULL;
+    }
+    SDL_FreeSurface(surface);
+    odv_sxt_close(sxt);
+    return tex;
+}
+
 void odv_rend_texture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y)
 {
     int w, h;
@@ -76,6 +105,7 @@ void help(void)
     printf("OPTION:\n");
     printf("\t-m: map interface (*.map)\n");
     printf("\t-v: map (*.dvm)\n");
+    printf("\t-x: screen win/loose (*.sxt)\n");
 }
 
 void sdl_loop(SDL_Window *win, SDL_Renderer *renderer, SDL_Texture *tex)
@@ -162,6 +192,9 @@ int main(int argc, char *argv[])
             break;
         case 'v':
             tex = odv_sdl_dvm(argv[2], renderer);
+            break;
+        case 'x':
+            tex = odv_sdl_sxt(argv[2], renderer);
             break;
         default:
             help();

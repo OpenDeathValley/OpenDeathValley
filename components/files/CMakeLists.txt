@@ -15,6 +15,7 @@ set(ODV_FILES_SRC
     odv_map_handler.c
     odv_dvd_handler.c
     odv_dvm_handler.c
+    odv_sxt_handler.c
     odv_scb_disassembler.c
     odv_scb_handler.c
     odv_utils.c)

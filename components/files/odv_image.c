@@ -64,7 +64,7 @@ struct ODVImage *odv_image_parse(struct ODVFile *file)
     }
     else if (img->type_compression == 0x01 || img->type_compression == 0x02) {
         /* ZLIB OR BZ2 */
-        length_dst = img->width * img->height * 3;
+        length_dst = img->width * img->height * 2;  /* R5G6B */
         buf_ucomp = calloc(length_dst, sizeof (char));
         if (buf_ucomp == NULL) {
             fprintf(stderr, "[-] odv_image_parse - calloc failed\n");
