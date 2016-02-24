@@ -17,7 +17,7 @@ struct ODVMap *odv_map_open(const char *filename)
         return NULL;
     }
     mfile->file = file;
-    mfile->imgmap = odv_imagemap_new(mfile->file);
+    mfile->imgmap = odv_imagemap_parse_one(mfile->file);
     if (mfile->imgmap == NULL) {
         odv_map_close(mfile);
         return NULL;

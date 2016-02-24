@@ -9,12 +9,12 @@ struct ODVResourceFile *odv_resource_open(const char *filename)
 
     file = odv_file_open(filename);
     if (file == NULL) {
-        fprintf(stderr, "[-] odv_open_resource - odv_file_open failed\n");
+        fprintf(stderr, "[-] odv_resource_open - odv_file_open failed\n");
         return NULL;
     }
     rfile = calloc(1, sizeof (struct ODVResourceFile));
     if (rfile == NULL) {
-        fprintf(stderr, "[-] odv_open_resource - calloc failed\n");
+        fprintf(stderr, "[-] odv_resource_open - calloc failed\n");
         odv_file_close(file);
         return NULL;
     }

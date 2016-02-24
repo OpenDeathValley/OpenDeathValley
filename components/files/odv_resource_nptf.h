@@ -8,10 +8,10 @@
 
 struct ODVResourceNptf
 {
-    unsigned int unk_dword_00;
-    unsigned int unk_dword_01;
+    unsigned int useless;
+    unsigned int nb_entry_bit;
     int nbentry;
-    struct ODVImage **entries;
+    struct ODVImageMap *imgmap;
 };
 
 void *odv_resource_parse_nptf(struct ODVResourceFile *rfile);

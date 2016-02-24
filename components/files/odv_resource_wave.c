@@ -4,12 +4,12 @@ void *odv_resource_parse_wave(struct ODVResourceFile *rfile)
 {
     struct ODVResourceWave *wave = NULL;
     struct ODVResourceWaveEntry *entry = NULL;
-    unsigned int unk_dword_00;
+    unsigned int useless;
     short nbentry;
     size_t numberofbytesread = 0;
     int i;
 
-    numberofbytesread = odv_file_read(rfile->file, &unk_dword_00, 4);
+    numberofbytesread = odv_file_read(rfile->file, &useless, 4);
     if (numberofbytesread != 4) {
         fprintf(stderr, "[-] odv_resource_parse_wave - file read 4 failed\n");
         return NULL;
@@ -24,7 +24,7 @@ void *odv_resource_parse_wave(struct ODVResourceFile *rfile)
         fprintf(stderr, "[-] odv_resource_parse_wave - calloc failed\n");
         return NULL;
     }
-    wave->unk_dword_00 = unk_dword_00;
+    wave->useless = useless;
     wave->nbentry = nbentry;
     wave->entries = calloc(nbentry, sizeof (struct ODVResourceWaveEntry*));
     for (i = 0; i < wave->nbentry; i++) {
@@ -79,7 +79,7 @@ void odv_resource_wave_info(const struct ODVResourceWave *wave)
     if (wave == NULL)
         return;
     printf("[- ODV RESOURCE WAVE information -]\n");
-    printf("unk_dword_00: 0x%08X\n", wave->unk_dword_00);
+    printf("useless: 0x%08X\n", wave->useless);
     printf("nbentry: 0x%04X (%d)\n", wave->nbentry, wave->nbentry);
     if (wave->entries != NULL) {
         for (i = 0; i < wave->nbentry; i++) {

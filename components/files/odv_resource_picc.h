@@ -9,9 +9,9 @@
 
 struct ODVResourcePicc
 {
-    unsigned int unk_dword_00;
+    unsigned int useless;
     int nbentry;
-    struct ODVImage **entries;
+    struct ODVImageMap *imgmap;
 };
 
 void *odv_resource_parse_picc(struct ODVResourceFile *rfile);

@@ -4,12 +4,12 @@ void *odv_resource_parse_text(struct ODVResourceFile *rfile)
 {
     struct ODVResourceText *text = NULL;
     struct ODVResourceTextEntry *entry = NULL;
-    unsigned int unk_dword_00;
+    unsigned int useless;
     short nbentry;
     size_t numberofbytesread = 0;
     int i;
 
-    numberofbytesread = odv_file_read(rfile->file, &unk_dword_00, 4);
+    numberofbytesread = odv_file_read(rfile->file, &useless, 4);
     if (numberofbytesread != 4) {
         fprintf(stderr, "[-] odv_resource_parse_text - file read 4 failed\n");
         return NULL;
@@ -24,7 +24,7 @@ void *odv_resource_parse_text(struct ODVResourceFile *rfile)
         fprintf(stderr, "[-] odv_resource_parse_text - calloc failed\n");
         return NULL;
     }
-    text->unk_dword_00 = unk_dword_00;
+    text->useless = useless;
     text->nbentry = nbentry;
     text->entries = calloc(nbentry, sizeof (struct ODVResourceTextEntry*));
     for (i = 0; i < text->nbentry; i++) {
@@ -61,15 +61,6 @@ struct ODVResourceTextEntry *odv_ressource_parse_text_entry(struct ODVResourceFi
         free(wbuf);
         return NULL;
     }
-    /*buf = calloc(length + 1, sizeof (char));
-    if (buf == NULL) {
-        fprintf(stderr, "[-] odv_ressource_parse_text_entry - calloc failed\n");
-        free(wbuf);
-        return NULL;
-    }
-    hex_dump(wbuf, length);
-    wcstombs(buf, wbuf, length);
-    free(wbuf);*/
     entry = calloc(1, sizeof (struct ODVResourceTextEntry));
     if (entry == NULL) {
         fprintf(stderr, "[-] odv_ressource_parse_text_entry - calloc failed\n");
@@ -88,7 +79,7 @@ void odv_resource_text_info(const struct ODVResourceText *text)
     if (text == NULL)
         return;
     printf("[- ODV RESOURCE TEXT information -]\n");
-    printf("unk_dword_00: 0x%08X\n", text->unk_dword_00);
+    printf("useless: 0x%08X\n", text->useless);
     printf("nbentry: 0x%04X (%d)\n", text->nbentry, text->nbentry);
     if (text->entries != NULL) {
         for (i = 0; i < text->nbentry; i++) {

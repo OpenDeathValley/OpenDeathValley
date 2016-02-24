@@ -13,7 +13,7 @@ struct ODVResourceWaveEntry
 
 struct ODVResourceWave
 {
-    unsigned int unk_dword_00;
+    unsigned int useless;
     short nbentry;
     struct ODVResourceWaveEntry **entries;
 };

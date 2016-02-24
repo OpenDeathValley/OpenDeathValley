@@ -37,14 +37,9 @@ struct ODVFnt *odv_fnt_open(const char *filename)
         }
         fnt->char_entries[i] = entry;
     }
-    /* image_00 */
-    fnt->imgmap = odv_imagemap_new(fnt->file);
+    /* Contains two image : image_00, image_01 */
+    fnt->imgmap = odv_imagemap_parse_nb(fnt->file, 2);
     if (fnt->imgmap == NULL) {
-        odv_fnt_close(fnt);
-        return NULL;
-    }
-    /* image_01 */
-    if (odv_imagemap_radd(fnt->imgmap, fnt->file) == 0) {
         odv_fnt_close(fnt);
         return NULL;
     }
