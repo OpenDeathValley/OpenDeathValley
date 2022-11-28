@@ -58,7 +58,7 @@ struct ODVFntChar *odv_fnt_parse_entry(struct ODVFnt *fnt)
     }
     numberofbytesread = odv_file_read(fnt->file, entry, sizeof (struct ODVFntChar));
     if (numberofbytesread != sizeof (struct ODVFntChar)) {
-        fprintf(stderr, "[-] odv_fnt_parse_header - file read %lu failed\n", sizeof (struct ODVFntChar));
+        fprintf(stderr, "[-] odv_fnt_parse_header - file read %zu failed\n", sizeof (struct ODVFntChar));
         free(entry);
         return NULL;
     }
@@ -71,7 +71,7 @@ int odv_fnt_parse_header(struct ODVFnt *fnt)
 
     numberofbytesread = odv_file_read(fnt->file, &fnt->header, sizeof (struct ODVFntHeader));
     if (numberofbytesread != sizeof (struct ODVFntHeader)) {
-        fprintf(stderr, "[-] odv_fnt_parse_header - file read %lu failed\n", sizeof (struct ODVFntHeader));
+        fprintf(stderr, "[-] odv_fnt_parse_header - file read %zu failed\n", sizeof (struct ODVFntHeader));
         return 0;
     }
     if (strncmp(fnt->header.signature, FNT_SIGNATURE, 6) != 0) {

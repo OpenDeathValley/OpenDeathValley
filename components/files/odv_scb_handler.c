@@ -173,9 +173,9 @@ int odv_scb_parse_quad(struct ODVSCBFile *sfile, struct ODVSCBClass *class)
 {
     char line[1024];
     int i;
-    int numberofbytesread;
-    int nbofquads = 0;
-    int nbofquadsread = 0;
+    size_t numberofbytesread;
+    unsigned int nbofquads = 0;
+    unsigned int nbofquadsread = 0;
 
     if (sfile == NULL || sfile->file == NULL || class == NULL)
         return 0;
