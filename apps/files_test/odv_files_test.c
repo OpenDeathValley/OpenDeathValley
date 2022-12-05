@@ -121,6 +121,10 @@ void odv_test_fnt(struct ODVFileTest *filetest)
 void odv_test_dvf(struct ODVFileTest *filetest)
 {
     struct ODVDvf *dvf = NULL;
+    unsigned short min_x = 0;
+    unsigned short min_y = 0;
+    unsigned short wx = 0;
+    unsigned short hy = 0;
 
     fprintf(stderr, "[+] odv_dvf_open = %s\n", filetest->filename);
     dvf = odv_dvf_open(filetest->filename);
@@ -133,13 +137,8 @@ void odv_test_dvf(struct ODVFileTest *filetest)
     if (filetest->extract) {
         for (unsigned short i = 0; i < dvf->nb_profiles; i++) {
             for (unsigned short j = 0; j < (unsigned short)(dvf->profiles[i]->nb_perspectives * dvf->profiles[i]->nb_animations); j++) {
-                //unsigned short min_x = odv_dvf_get_frame_min_x(dvf->profiles[i]->animations[j]);
-                //unsigned short min_y = odv_dvf_get_frame_min_y(dvf->profiles[i]->animations[j]);
-                unsigned short max_x = odv_dvf_get_frame_max_x(dvf->profiles[i]->animations[j]);
-                unsigned short max_y = odv_dvf_get_frame_max_y(dvf->profiles[i]->animations[j]);
-                unsigned short max_width;
-                unsigned short max_height;
-                odv_dvf_get_frame_max_width_height(dvf, dvf->profiles[i]->animations[j], &max_width, &max_height);
+                odv_dvf_get_frame_min_x_y(dvf->profiles[i]->animations[j], &min_x, &min_y);
+                odv_dvf_get_frame_max_wx_hy(dvf, dvf->profiles[i]->animations[j], &wx, &hy);
                 for (unsigned short k = 0; k < dvf->profiles[i]->animations[j]->nb_frames; k++) {
                     char bmp_filepath[MAX_PATH];
 #ifdef WINDOWS
@@ -147,7 +146,8 @@ void odv_test_dvf(struct ODVFileTest *filetest)
 #else
                     snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s_%s_%04d.bmp",filetest->output, dvf->profiles[i]->name, dvf->profiles[i]->animations[j]->animation_name, k);
 #endif
-                    odv_image_to_bmp_ex(dvf->sprites[dvf->profiles[i]->animations[j]->frames[k]->sprite_id], bmp_filepath, max_width + max_x, max_height + max_y, dvf->profiles[i]->animations[j]->frames[k]->coordinate_x, dvf->profiles[i]->animations[j]->frames[k]->coordinate_y);
+                    odv_image_to_bmp_ex(dvf->sprites[dvf->profiles[i]->animations[j]->frames[k]->sprite_id], bmp_filepath, wx - min_x, hy - min_y, dvf->profiles[i]->animations[j]->frames[k]->coordinate_x - min_x, dvf->profiles[i]->animations[j]->frames[k]->coordinate_y - min_y);
+
                 }
             }
         }

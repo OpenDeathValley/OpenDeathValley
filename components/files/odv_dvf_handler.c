@@ -258,28 +258,34 @@ struct ODVImage* odv_dvf_parse_sprite(struct ODVDvf *dvf)
     return sprite;
 }
 
-unsigned short odv_dvf_get_frame_max_x(const struct ODVDvfAnimation *animation)
+void odv_dvf_get_frame_max_x_y(const struct ODVDvfAnimation *animation, unsigned short *max_x, unsigned short *max_y)
 {
-    unsigned short max_x = 0;
+    *max_x = 0;
+    *max_y = 0;
 
     for (unsigned short i = 0; i < animation->nb_frames; i++) {
-        if (animation->frames[i]->coordinate_x > max_x) {
-            max_x = animation->frames[i]->coordinate_x;
+        if (animation->frames[i]->coordinate_x > *max_x) {
+            *max_x = animation->frames[i]->coordinate_x;
+        }
+        if (animation->frames[i]->coordinate_y > *max_y) {
+            *max_y = animation->frames[i]->coordinate_y;
         }
     }
-    return max_x;
 }
 
-unsigned short odv_dvf_get_frame_max_y(const struct ODVDvfAnimation *animation)
+void odv_dvf_get_frame_min_x_y(const struct ODVDvfAnimation *animation, unsigned short *min_x, unsigned short *min_y)
 {
-    unsigned short max_y = 0;
+    *min_x = 0xFFFF;
+    *min_y = 0xFFFF;
 
     for (unsigned short i = 0; i < animation->nb_frames; i++) {
-        if (animation->frames[i]->coordinate_y > max_y) {
-            max_y = animation->frames[i]->coordinate_y;
+        if (animation->frames[i]->coordinate_x < *min_x) {
+            *min_x = animation->frames[i]->coordinate_x;
+        }
+        if (animation->frames[i]->coordinate_y < *min_y) {
+            *min_y = animation->frames[i]->coordinate_y;
         }
     }
-    return max_y;
 }
 
 void odv_dvf_get_frame_max_width_height(const struct ODVDvf *dvf, const struct ODVDvfAnimation *animation, unsigned short *max_width, unsigned short *max_height)
@@ -297,42 +303,20 @@ void odv_dvf_get_frame_max_width_height(const struct ODVDvf *dvf, const struct O
     }
 }
 
-unsigned short odv_dvf_get_frame_max_width(const struct ODVDvf *dvf, const struct ODVDvfAnimation *animation)
+void odv_dvf_get_frame_max_wx_hy(const struct ODVDvf *dvf, const struct ODVDvfAnimation *animation, unsigned short *max_wx, unsigned short *max_hy)
 {
-    unsigned short max_height = 0;
+    *max_wx = 0;
+    *max_hy = 0;
 
     for (unsigned short i = 0; i < animation->nb_frames; i++) {
-        if (dvf->sprites[animation->frames[i]->sprite_id]->height > max_height) {
-            max_height = dvf->sprites[animation->frames[i]->sprite_id]->height;
+        if (dvf->sprites[animation->frames[i]->sprite_id]->width + animation->frames[i]->coordinate_x > *max_wx) {
+            *max_wx = dvf->sprites[animation->frames[i]->sprite_id]->width + animation->frames[i]->coordinate_x;
+        }
+        if (dvf->sprites[animation->frames[i]->sprite_id]->height + animation->frames[i]->coordinate_y > *max_hy) {
+            *max_hy = dvf->sprites[animation->frames[i]->sprite_id]->height + animation->frames[i]->coordinate_y;
         }
     }
-    return max_height;
 }
-
-unsigned short odv_dvf_get_frame_min_x(const struct ODVDvfAnimation *animation)
-{
-    unsigned short min_x = 0xFFFF;
-
-    for (unsigned short i = 0; i < animation->nb_frames; i++) {
-        if (animation->frames[i]->coordinate_x < min_x) {
-            min_x = animation->frames[i]->coordinate_x;
-        }
-    }
-    return min_x;
-}
-
-unsigned short odv_dvf_get_frame_min_y(const struct ODVDvfAnimation *animation)
-{
-    unsigned short min_y = 0xFFFF;
-
-    for (unsigned short i = 0; i < animation->nb_frames; i++) {
-        if (animation->frames[i]->coordinate_y < min_y) {
-            min_y = animation->frames[i]->coordinate_y;
-        }
-    }
-    return min_y;
-}
-
 
 int odv_dvf_parse_header(struct ODVDvf *dvf)
 {

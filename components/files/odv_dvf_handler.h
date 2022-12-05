@@ -128,10 +128,9 @@ void odv_dvf_frame_info(const struct ODVDvfFrame *frame);
 void odv_dvf_close(struct ODVDvf *fnt);
 void odv_dvf_clean_animation(struct ODVDvfAnimation *animation);
 void odv_dvf_clean_profile(struct ODVDvfProfile *profile);
-unsigned short odv_dvf_get_frame_max_x(const struct ODVDvfAnimation *animation);
-unsigned short odv_dvf_get_frame_max_y(const struct ODVDvfAnimation *animation);
-unsigned short odv_dvf_get_frame_min_x(const struct ODVDvfAnimation *animation);
-unsigned short odv_dvf_get_frame_min_y(const struct ODVDvfAnimation *animation);
+void odv_dvf_get_frame_max_x_y(const struct ODVDvfAnimation *animation, unsigned short *max_x, unsigned short *max_y);
+void odv_dvf_get_frame_min_x_y(const struct ODVDvfAnimation *animation, unsigned short *min_x, unsigned short *min_y);
 void odv_dvf_get_frame_max_width_height(const struct ODVDvf *dvf, const struct ODVDvfAnimation *animation, unsigned short *max_width, unsigned short *max_height);
+void odv_dvf_get_frame_max_wx_hy(const struct ODVDvf *dvf, const struct ODVDvfAnimation *animation, unsigned short *max_wx, unsigned short *max_hy);
 
 #endif /* OPENDV_DVF_HANDLER_H */

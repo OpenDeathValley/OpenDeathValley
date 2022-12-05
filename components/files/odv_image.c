@@ -237,7 +237,13 @@ int odv_image_to_bmp_ex(struct ODVImage *img, const char *bmp_filename, unsigned
         for (unsigned int j = 0; j < img->width; j++) {
             unsigned pos = (y * width + x) * 2;
             pos = pos + ((((i * width)) + j) * 2);
-            *(unsigned short*)((unsigned char*)data + pos) = *(unsigned short*)((unsigned char*)img->buf + ((i * img->width) + j) * 2);
+            // dbg
+            //if (i == 0 || j == 0 || i == (unsigned int)(img->height - 1) || j == (unsigned int)(img->width - 1)) {
+            //    *(unsigned short*)((unsigned char*)data + pos) = 0xF8 << 8;
+            //}
+            //else {
+                *(unsigned short*)((unsigned char*)data + pos) = *(unsigned short*)((unsigned char*)img->buf + ((i * img->width) + j) * 2);
+            //}
         }
     }
 
