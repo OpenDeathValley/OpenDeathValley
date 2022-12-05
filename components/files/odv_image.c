@@ -108,24 +108,24 @@ void odv_image_info(const struct ODVImage *img)
     if (img == NULL)
         return;
     printf("[- ODV IMAGE information -]\n");
-    printf("width : 0x%04X\n", img->width);
-    printf("height: 0x%04X\n", img->height);
+    printf("width : 0x%04X (%d)\n", img->width, img->width);
+    printf("height: 0x%04X (%d)\n", img->height, img->height);
     printf("type_compression: 0x%08X\n", img->type_compression);
     printf("data_size: 0x%08X\n", img->data_size);
     printf("[-------------------------]\n");
 }
 
-int odv_image_get_r(short x)
+unsigned char odv_image_get_r(unsigned short x)
 {
     return ((x >> 8) & 0xF8);
 }
 
-int odv_image_get_g(short x)
+unsigned char odv_image_get_g(unsigned short x)
 {
     return ((x >> 3) & 0xFC);
 }
 
-int odv_image_get_b(short x)
+unsigned char odv_image_get_b(unsigned short x)
 {
     return ((x << 3) & 0xFF);
 }
@@ -137,9 +137,120 @@ short odv_image_to_rgb(int r, int g, int b)
 
 void odv_image_clean(struct ODVImage *img)
 {
-    if (img == NULL)
+    if (img == NULL) {
         return;
-    if (img->buf != NULL)
+    }
+    if (img->buf != NULL) {
         free(img->buf);
+        img->buf = NULL;
+    }
     free(img);
+}
+
+int odv_image_to_bmp(struct ODVImage *img, const char *bmp_filename)
+{
+    struct BMPHeader bmp_header;
+    struct BMPInfoHeader bmp_info_header;
+    unsigned int paddedRowSize = 0;
+    FILE *outputFile = NULL;
+    unsigned char color[3];
+
+
+    outputFile = fopen(bmp_filename, "wb");
+    paddedRowSize = align4(img->width);
+    bmp_header.type = 0x4d42; // "BM"
+    bmp_header.size = (paddedRowSize * img->height) + BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
+    bmp_header.reserved = 0x00;
+    bmp_header.offset = BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
+    fwrite(&bmp_header, sizeof (struct BMPHeader), 1, outputFile);
+    bmp_info_header.header_size = BMP_INFO_HEADER_SIZE;
+    bmp_info_header.width = img->width;
+    bmp_info_header.height = img->height;
+    bmp_info_header.num_planes = 0x01;
+    bmp_info_header.bits_per_pixel = 24;
+    bmp_info_header.compression = BMP_NO_COMPRESION;
+    bmp_info_header.image_size_bytes = img->width * img->height * (bmp_info_header.bits_per_pixel / 8);
+    bmp_info_header.x_resolution_ppm = 0;
+    bmp_info_header.y_resolution_ppm = 0;
+    bmp_info_header.num_colors = BMP_MAX_NUMBER_OF_COLORS;
+    bmp_info_header.important_colors = BMP_ALL_COLORS_REQUIRED;
+    fwrite(&bmp_info_header, sizeof (struct BMPInfoHeader), 1, outputFile);
+    for (unsigned int i = 0; i < img->height; i++) {
+        for (unsigned int j = 0; j < img->width; j++) {
+            unsigned short pixel = *(unsigned short*)((unsigned char*)img->buf + ((((img->height - 1 - i) * img->width) + j) * 2));
+            color[2] = odv_image_get_r(pixel);
+            color[1] = odv_image_get_g(pixel);
+            color[0] = odv_image_get_b(pixel);
+            fwrite(&color, sizeof (unsigned char), 3, outputFile);
+        }
+    }
+
+    fclose(outputFile);
+
+    return 0;
+}
+
+int odv_image_to_bmp_ex(struct ODVImage *img, const char *bmp_filename, unsigned int width, unsigned int height, unsigned int x, unsigned int y)
+{
+    struct BMPHeader bmp_header;
+    struct BMPInfoHeader bmp_info_header;
+    unsigned int paddedRowSize = 0;
+    FILE *outputFile = NULL;
+    unsigned char color[3];
+
+    outputFile = fopen(bmp_filename, "wb");
+    // TODO it's already aligned :/
+    paddedRowSize = align4(width);
+    width = paddedRowSize;
+    bmp_header.type = 0x4d42; // "BM"
+    bmp_header.size = (paddedRowSize * height) + BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
+    bmp_header.reserved = 0x00;
+    bmp_header.offset = BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
+    fwrite(&bmp_header, sizeof (struct BMPHeader), 1, outputFile);
+    bmp_info_header.header_size = BMP_INFO_HEADER_SIZE;
+    bmp_info_header.width = width;
+    bmp_info_header.height = height;
+    bmp_info_header.num_planes = 0x01;
+    bmp_info_header.bits_per_pixel = 24;
+    bmp_info_header.compression = BMP_NO_COMPRESION;
+    bmp_info_header.image_size_bytes = width * height * (bmp_info_header.bits_per_pixel / 8);
+    bmp_info_header.x_resolution_ppm = 0;
+    bmp_info_header.y_resolution_ppm = 0;
+    bmp_info_header.num_colors = BMP_MAX_NUMBER_OF_COLORS;
+    bmp_info_header.important_colors = BMP_ALL_COLORS_REQUIRED;
+    fwrite(&bmp_info_header, sizeof (struct BMPInfoHeader), 1, outputFile);
+
+    unsigned char *data = malloc(height * width * 0x02);
+    memset(data, 0x00, height * width * 0x02);
+    for (unsigned int i = 0; i < height; i++) {
+        for (unsigned int j = 0; j < width; j++) {
+            *(unsigned short*)((unsigned char*)data + ((((i * width)) + j) * 2)) = 0x7C0;
+        }
+    }
+    for (unsigned int i = y; i < height; i++) {
+        for (unsigned int j = 0; j < x; j++) {
+            *(unsigned short*)((unsigned char*)data + ((((i * width)) + j) * 2)) = 0x7C0;
+        }
+    }
+
+    for (unsigned int i = 0; i < img->height; i++) {
+        for (unsigned int j = 0; j < img->width; j++) {
+            unsigned pos = (y * width + x) * 2;
+            pos = pos + ((((i * width)) + j) * 2);
+            *(unsigned short*)((unsigned char*)data + pos) = *(unsigned short*)((unsigned char*)img->buf + ((i * img->width) + j) * 2);
+        }
+    }
+
+    for (unsigned int i = 0; i < height; i++) {
+        for (unsigned int j = 0; j < width; j++) {
+             unsigned short pixel = *(unsigned short*)((unsigned char*)data + ((((height - 1 - i) * width) + j) * 2));
+            color[2] = odv_image_get_r(pixel);
+            color[1] = odv_image_get_g(pixel);
+            color[0] = odv_image_get_b(pixel);
+            fwrite(&color, sizeof (unsigned char), 3, outputFile);
+        }
+    }
+    free(data);
+    fclose(outputFile);
+    return 0;
 }
