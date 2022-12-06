@@ -91,8 +91,8 @@ struct ODVDvfProfile
 #pragma pack(push, 1)
 struct ODVDvfRowSpriteHeader
 {
-    unsigned short num_transparent_pixels;
-    unsigned short num_total_pixels;
+    unsigned short nb_transparent_pixels;
+    unsigned short nb_total_pixels;
 };
 #pragma pack(pop)
 

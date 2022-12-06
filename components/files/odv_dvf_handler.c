@@ -230,17 +230,17 @@ struct ODVImage* odv_dvf_parse_sprite(struct ODVDvf *dvf)
         }
         row_sprite_header = (struct ODVDvfRowSpriteHeader *)(cur_data);
         cur_data = cur_data + sizeof (struct ODVDvfRowSpriteHeader);
-        if (row_sprite_header->num_transparent_pixels == 0x00 && row_sprite_header->num_total_pixels == 0xFFFF) {
+        if (row_sprite_header->nb_transparent_pixels == 0x00 && row_sprite_header->nb_total_pixels == 0xFFFF) {
             continue;
         }
-        else if (row_sprite_header->num_transparent_pixels > sprite->width || 
-            row_sprite_header->num_transparent_pixels > row_sprite_header->num_total_pixels || 
-            (row_sprite_header->num_total_pixels + 1) > sprite->width) {
+        else if (row_sprite_header->nb_transparent_pixels > sprite->width ||
+            row_sprite_header->nb_transparent_pixels > row_sprite_header->nb_total_pixels ||
+            (row_sprite_header->nb_total_pixels + 1) > sprite->width) {
             continue;
         }
         else {
-                row_sprite_header->num_total_pixels = row_sprite_header->num_total_pixels + 1;
-                for (unsigned short i = 0; i < (row_sprite_header->num_total_pixels - row_sprite_header->num_transparent_pixels); i++) {
+                row_sprite_header->nb_total_pixels = row_sprite_header->nb_total_pixels + 1;
+                for (unsigned short i = 0; i < (row_sprite_header->nb_total_pixels - row_sprite_header->nb_transparent_pixels); i++) {
                     if ((cur_data + sizeof (unsigned short)) > (data + sprite_header.size)) {
                         odv_image_clean(sprite);
                         free(data);
@@ -248,7 +248,7 @@ struct ODVImage* odv_dvf_parse_sprite(struct ODVDvf *dvf)
                     }
                     unsigned short cur_pix = *(unsigned short*)(cur_data);
                     if (cur_pix != 0x1F && cur_pix != 0x7C0) {
-                        *(unsigned short*)((unsigned char*)sprite->buf + ((unsigned short)(row * sprite_header.width) + ((i + row_sprite_header->num_transparent_pixels))) * 2) = cur_pix;
+                        *(unsigned short*)((unsigned char*)sprite->buf + ((unsigned short)(row * sprite_header.width) + ((i + row_sprite_header->nb_transparent_pixels))) * 2) = cur_pix;
                     }
                     cur_data += 0x02;
                 }
@@ -404,7 +404,7 @@ void odv_dvf_frame_info(const struct ODVDvfFrame *frame)
      printf("            + distance     : 0x%04X\n", frame->distance);
      printf("            + coordinate_x : %f\n", (float)frame->coordinate_x);
      printf("            + coordinate_y : %f\n", (float)frame->coordinate_y);
-     printf("            + sound_id     : 0x%04X\n", frame->sound_id);
+     printf("            + sound_id     : 0x%04X (%d)\n", frame->sound_id, frame->sound_id);
      printf("            + unused_00    : 0x%04X\n", frame->unused_00);
 }
 

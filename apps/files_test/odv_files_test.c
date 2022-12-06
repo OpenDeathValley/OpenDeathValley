@@ -142,9 +142,9 @@ void odv_test_dvf(struct ODVFileTest *filetest)
                 for (unsigned short k = 0; k < dvf->profiles[i]->animations[j]->nb_frames; k++) {
                     char bmp_filepath[MAX_PATH];
 #ifdef WINDOWS
-                    snprintf(bmp_filepath, MAX_PATH - 1, "%s\\%s_%s_%04d.bmp",filetest->output, dvf->profiles[i]->name, dvf->profiles[i]->animations[j]->animation_name, k);
+                    snprintf(bmp_filepath, MAX_PATH - 1, "%s\\%s_%s_%04d.bmp",filetest->output, dvf->profiles[i]->name, dvf->profiles[i]->animations[j]->animation_name + 1, k);
 #else
-                    snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s_%s_%04d.bmp",filetest->output, dvf->profiles[i]->name, dvf->profiles[i]->animations[j]->animation_name, k);
+                    snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s_%s_%04d.bmp",filetest->output, dvf->profiles[i]->name, dvf->profiles[i]->animations[j]->animation_name + 1, k);
 #endif
                     odv_image_to_bmp_ex(dvf->sprites[dvf->profiles[i]->animations[j]->frames[k]->sprite_id], bmp_filepath, wx - min_x, hy - min_y, dvf->profiles[i]->animations[j]->frames[k]->coordinate_x - min_x, dvf->profiles[i]->animations[j]->frames[k]->coordinate_y - min_y);
 
