@@ -62,7 +62,7 @@ int odv_dvd_parse_entry(struct ODVDDvdFile *dfile)
     unsigned int signature;
     unsigned int length;
     size_t numberofbytesread = 0;
-    unsigned int saved_pos = 0;
+    size_t saved_pos = 0;
     void *entry = NULL;
 
     if (dfile == NULL)
@@ -169,14 +169,14 @@ void *odv_dvd_parse_misc(struct ODVDDvdFile *dfile)
     }
     numberofbytesread = odv_file_read(dfile->file, misc, sizeof (struct ODVDvdMisc) - (sizeof (unsigned short) * 2));
     if (numberofbytesread != (sizeof (struct ODVDvdMisc) - (sizeof (unsigned short) * 2))) {
-        fprintf(stderr, "[-] odv_dvd_parse_misc - file read %lu failed\n", sizeof (struct ODVDvdMisc) - (sizeof (unsigned short) * 2));
+        fprintf(stderr, "[-] odv_dvd_parse_misc - file read %zu failed\n", sizeof (struct ODVDvdMisc) - (sizeof (unsigned short) * 2));
         free(misc);
         return NULL;
     }
     if (misc->unk_byte_04 == 1) {
         numberofbytesread = odv_file_read(dfile->file, &misc->unk_word_04, sizeof (unsigned short) * 2);
         if (numberofbytesread != (sizeof (unsigned short) * 2)) {
-            fprintf(stderr, "[-] odv_dvd_parse_misc - file read %lu failed\n", sizeof (unsigned short) * 2);
+            fprintf(stderr, "[-] odv_dvd_parse_misc - file read %zu failed\n", sizeof (unsigned short) * 2);
             free(misc);
             return NULL;
         }

@@ -7,13 +7,13 @@
 
 struct ODVResourceCur
 {
-    unsigned int unk_dword_00;
-    unsigned short unk_word_00;
-    unsigned short unk_word_01;
-    unsigned short unk_word_02;
-    unsigned short unk_word_03;
+    unsigned int useless;
+    unsigned short tick_count_redraw;
+    unsigned short hit_point_y;
+    unsigned short hit_point_x;
+    unsigned short tick_count_redraw_per_image;
     int nbentry;
-    struct ODVImage **entries;
+    struct ODVImageMap *imgmap;
 };
 
 void *odv_resource_parse_cur(struct ODVResourceFile *rfile);

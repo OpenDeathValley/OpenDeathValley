@@ -117,6 +117,60 @@ SDL_Texture *odv_sdl_fnt(const char *filename, SDL_Renderer *renderer)
     return tex;
 }
 
+SDL_Texture *odv_sdl_dvf(const char *filename, SDL_Window *win, SDL_Renderer *renderer)
+{
+    struct ODVDvf *dvf = NULL;
+    SDL_Surface *surface = NULL;
+    SDL_Texture *tex = NULL;
+    SDL_Event event;
+    int quit = 0x00;
+    //int pos_x = 0x00;
+    //int pos_y = 0x00;
+
+    fprintf(stderr, "[+] odv_dvf_open = %s\n", filename);
+    dvf = odv_dvf_open(filename);
+    if (dvf == NULL)
+        return NULL;
+    SDL_ShowWindow(win);
+    while (quit == 0x00) {
+        /* Multiple choice */
+        for (unsigned short i = 0; i < dvf->nb_profiles; i++) {
+            for (unsigned short j = 0; j < dvf->profiles[i]->nb_perspectives * dvf->profiles[i]->nb_animations; j++) {
+                for (unsigned short k = 0; k < dvf->profiles[i]->animations[j]->nb_frames; k++) {
+                    if (quit == 0x01) {
+                        break;
+                    }
+                    surface = odv_image_to_surface(dvf->sprites[dvf->profiles[i]->animations[j]->frames[k]->sprite_id]);
+                    if (surface == NULL) {
+                        return NULL;
+                    }
+                    if (tex != NULL) {
+                        SDL_DestroyTexture(tex);
+                    }
+                    tex = SDL_CreateTextureFromSurface(renderer, surface);
+                    if (tex == NULL) {
+                        fprintf(stderr, "[-] SDL_CreateTextureFromSurface error: %s\n", SDL_GetError());
+                        SDL_FreeSurface(surface);
+                        return NULL;
+                    }
+                    SDL_FreeSurface(surface);
+                    while (SDL_PollEvent(&event)) {
+                        if (event.type == SDL_QUIT) {
+                            quit = 0x01;
+                        }
+                    }
+                    SDL_RenderClear(renderer);
+                    odv_rend_texture(tex, renderer, dvf->profiles[i]->animations[j]->frames[k]->coordinate_x, dvf->profiles[i]->animations[j]->frames[k]->coordinate_y);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(100);
+                }
+            }
+        }
+    }
+    odv_dvf_close(dvf);
+    return NULL;
+}
+
 void odv_rend_texture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y)
 {
     int w, h;
@@ -135,6 +189,7 @@ void help(void)
     printf("OPTION:\n");
     printf("\t-m: map interface (*.map)\n");
     printf("\t-v: map (*.dvm)\n");
+    printf("\t-f: dvf file (*.dvf)\n");
     printf("\t-x: screen win/loose (*.sxt)\n");
     printf("\t-n: font (*.fnt)\n");
 }
@@ -225,6 +280,10 @@ int main(int argc, char *argv[])
             break;
         case 'v':
             tex = odv_sdl_dvm(argv[2], renderer);
+            break;
+        case 'f':
+            tex = odv_sdl_dvf(argv[2], win, renderer);
+            exit(42);
             break;
         case 'x':
             tex = odv_sdl_sxt(argv[2], renderer);

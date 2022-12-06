@@ -1,6 +1,36 @@
 #include "odv_imagemap.h"
 
-struct ODVImageMap *odv_imagemap_new(struct ODVFile *file)
+struct ODVImageMap *odv_imagemap_parse_nb(struct ODVFile *file, unsigned int image_count)
+{
+    struct ODVImage *img = NULL;
+    struct ODVImageMap *imgmap = NULL;
+    unsigned int i;
+
+    imgmap = calloc(1, sizeof (struct ODVImageMap));
+    if (imgmap == NULL) {
+        fprintf(stderr, "[-] odv_imagemap_parse_nb - calloc failed\n");
+        odv_image_clean(img);
+        return NULL;
+    }
+    imgmap->image_count = image_count;
+    imgmap->images = calloc(imgmap->image_count, sizeof (struct ODVImage*));
+    if (imgmap->images == NULL) {
+        fprintf(stderr, "[-] odv_imagemap_parse_nb - calloc failed\n");
+        free(imgmap);
+        return NULL;
+    }
+    for (i = 0; i < imgmap->image_count; i++) {
+        img = odv_image_parse(file);
+        if (img == NULL) {
+            odv_imagemap_clean(imgmap);
+            return NULL;
+        }
+        imgmap->images[i] = img;
+    }
+    return imgmap;
+}
+
+struct ODVImageMap *odv_imagemap_parse_one(struct ODVFile *file)
 {
     struct ODVImage *img = NULL;
     struct ODVImageMap *imgmap = NULL;
@@ -17,7 +47,10 @@ struct ODVImageMap *odv_imagemap_new(struct ODVFile *file)
     }
     imgmap->images = NULL;
     imgmap->image_count = 0;
-    odv_imagemap_add(imgmap, img);
+    if (odv_imagemap_add(imgmap, img) == 0) {
+        free(imgmap);
+        return NULL;
+    }
     return imgmap;
 }
 

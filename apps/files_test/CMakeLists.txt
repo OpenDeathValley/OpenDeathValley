@@ -10,5 +10,8 @@ add_executable(odv_sdl_test ${FILES_SDL_TEST_SRC})
 
 target_link_libraries(odv_files_test odv_components_files ${LINK_LIBS})
 
+if(WIN32)
+target_link_libraries(odv_sdl_test odv_components_files odv_components_sdlutil ${LINK_LIBS} ${SDL2_LIBRARY} ${SDL2MAIN_LIBRARY})
+else()
 target_link_libraries(odv_sdl_test odv_components_files odv_components_sdlutil ${LINK_LIBS} ${SDL2_LIBRARY})
-
+endif()

@@ -15,7 +15,7 @@ struct ODVResourceTextEntry
 
 struct ODVResourceText
 {
-    unsigned int unk_dword_00;
+    unsigned int useless;
     short nbentry;
     struct ODVResourceTextEntry **entries;
 };

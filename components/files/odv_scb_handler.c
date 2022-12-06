@@ -173,9 +173,9 @@ int odv_scb_parse_quad(struct ODVSCBFile *sfile, struct ODVSCBClass *class)
 {
     char line[1024];
     int i;
-    int numberofbytesread;
-    int nbofquads = 0;
-    int nbofquadsread = 0;
+    size_t numberofbytesread;
+    unsigned int nbofquads = 0;
+    unsigned int nbofquadsread = 0;
 
     if (sfile == NULL || sfile->file == NULL || class == NULL)
         return 0;
@@ -194,10 +194,10 @@ int odv_scb_parse_quad(struct ODVSCBFile *sfile, struct ODVSCBClass *class)
         else
             nbofquads = class->nbofquads - nbofquadsread;
         class->funcs[i]->nbofquads = nbofquads;
-        if (nbofquads < 0) {
-            fprintf(stderr, "[-] odv_scb_parse_quad - negative nbofquads\n");
-            return 0;
-        }
+        //if (nbofquads < 0) {
+        //    fprintf(stderr, "[-] odv_scb_parse_quad - negative nbofquads\n");
+        //    return 0;
+        //}
         class->funcs[i]->bytecode = calloc(nbofquads * 10, sizeof (char));
         if (class->funcs[i]->bytecode == NULL) {
             fprintf(stderr, "[-] odv_scb_parse_quad - calloc failed\n");

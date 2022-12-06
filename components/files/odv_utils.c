@@ -37,3 +37,31 @@ void hex_dump(void *data, int size)
         printf("[%4.4s]   %-50.50s  %s\n", addrstr, hexstr, charstr);
     }
 }
+
+int arg_longf(const char *argv, const char *arg_name, size_t *pos_argv) 
+{
+    if (!strncmp(&argv[*pos_argv + 1], arg_name, strlen(arg_name))) {
+        *pos_argv += strlen(arg_name);
+        return 1;
+    }
+    return 0;
+}
+
+int file_exists(const char *filename)
+{
+    struct stat path_stat;
+
+    return (stat(filename, &path_stat) != 0);
+}
+
+int is_regular_file(const char *filename)
+{
+    struct stat path_stat;
+
+    stat(filename, &path_stat);
+    return S_ISREG(path_stat.st_mode);
+}
+
+int is_folder_writable(const char* filename) {
+    return (access(filename, W_OK) != 0);
+}

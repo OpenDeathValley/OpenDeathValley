@@ -17,7 +17,7 @@ struct ODVSxt *odv_sxt_open(const char *filename)
         return NULL;
     }
     sxt->file = file;
-    sxt->imgmap = odv_imagemap_new(sxt->file);
+    sxt->imgmap = odv_imagemap_parse_one(sxt->file);
     if (sxt->imgmap == NULL) {
         odv_sxt_close(sxt);
         return NULL;

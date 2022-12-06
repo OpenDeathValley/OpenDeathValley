@@ -80,7 +80,7 @@ struct ODVFile *odv_file_open(const char *filename)
 
 #endif
 
-int odv_file_read(struct ODVFile *file, void *buf, size_t count)
+size_t odv_file_read(struct ODVFile *file, void *buf, size_t count)
 {
     size_t length;
 
@@ -99,7 +99,7 @@ int odv_file_read(struct ODVFile *file, void *buf, size_t count)
     return length;
 }
 
-int odv_file_readline(struct ODVFile *file, char *buf, size_t count)
+size_t odv_file_readline(struct ODVFile *file, char *buf, size_t count)
 {
     size_t length;
     char *newline = NULL;
@@ -159,7 +159,7 @@ void odv_file_info(const struct ODVFile *file)
         return;
     printf("[- ODV file information -]\n");
     printf("filename : %s\n", file->filename);
-    printf("filesize : 0x%08X\n", file->length);
-    printf("position : 0x%08X\n", file->pos);
+    printf("filesize : 0x%08zX\n", file->length);
+    printf("position : 0x%08zX\n", file->pos);
     printf("[------------------------]\n");
 }

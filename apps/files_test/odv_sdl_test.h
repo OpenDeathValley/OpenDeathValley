@@ -11,7 +11,10 @@
 #include "odv_dvm_handler.h"
 #include "odv_sxt_handler.h"
 #include "odv_fnt_handler.h"
+#include "odv_dvf_handler.h"
 
 #include "odv_image_to_surface.h"
+
+void odv_rend_texture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y);
 
 #endif /* OPENDV_TEST_H */
