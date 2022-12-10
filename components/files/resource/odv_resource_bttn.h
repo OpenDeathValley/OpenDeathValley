@@ -15,6 +15,7 @@ struct ODVResourceBttn
 
 void *odv_resource_parse_bttn(struct ODVResourceFile *rfile);
 void odv_resource_bttn_info(const struct ODVResourceBttn *bttn);
+void odv_resource_bttn_extract(const struct ODVResourceBttn *picc, const char *filename, const char *output, unsigned int id);
 void odv_resource_clean_bttn(struct ODVResourceBttn *bttn);
 
 #endif /* OPENDV_RESOURCE_BTTN_H */

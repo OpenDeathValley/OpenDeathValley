@@ -17,6 +17,7 @@ struct ODVResourcePicc
 void *odv_resource_parse_picc(struct ODVResourceFile *rfile);
 void *odv_resource_parse_pic(struct ODVResourceFile *rfile);
 void odv_resource_picc_info(const struct ODVResourcePicc *picc);
+void odv_resource_picc_extract(const struct ODVResourcePicc *picc, const char *filename, const char *output, unsigned int id);
 void odv_resource_clean_picc(struct ODVResourcePicc *picc);
 
 #endif /* OPENDV_RESOURCE_PICC_H */

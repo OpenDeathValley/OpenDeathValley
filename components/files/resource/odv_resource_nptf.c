@@ -53,6 +53,15 @@ void odv_resource_nptf_info(const struct ODVResourceNptf *nptf)
     printf("[---------------------------------]\n");
 }
 
+void odv_resource_nptf_extract(const struct ODVResourceNptf *picc, const char *filename, const char *output, unsigned int id)
+{
+    char suffix[256];
+
+    snprintf(suffix, sizeof (suffix) - 1, "%d", id);
+
+    odv_imagemap_extract(picc->imgmap, filename, output, suffix);
+}
+
 void odv_resource_clean_nptf(struct ODVResourceNptf *nptf)
 {
     if (nptf == NULL)

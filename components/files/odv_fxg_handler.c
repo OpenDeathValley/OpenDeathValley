@@ -97,8 +97,9 @@ struct ODVSoundFXGEntry *odv_fxg_parse_entry(struct ODVSoundFXGFile *sfile)
 
 void odv_fxg_clean_entry(struct ODVSoundFXGEntry *entry)
 {
-    if (entry == NULL)
+    if (entry == NULL) {
         return;
+    }
     free(entry);
 }
 

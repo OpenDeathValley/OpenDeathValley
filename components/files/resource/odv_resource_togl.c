@@ -53,11 +53,22 @@ void odv_resource_togl_info(const struct ODVResourceTogl *togl)
     printf("[---------------------------------]\n");
 }
 
+void odv_resource_togl_extract(const struct ODVResourceTogl *picc, const char *filename, const char *output, unsigned int id)
+{
+    char suffix[256];
+
+    snprintf(suffix, sizeof (suffix) - 1, "%d", id);
+
+    odv_imagemap_extract(picc->imgmap, filename, output, suffix);
+}
+
 void odv_resource_clean_togl(struct ODVResourceTogl *togl)
 {
-    if (togl == NULL)
+    if (togl == NULL) {
         return;
-    if (togl->imgmap != NULL)
+    }
+    if (togl->imgmap != NULL) {
         odv_imagemap_clean(togl->imgmap);
+    }
     free(togl);
 }

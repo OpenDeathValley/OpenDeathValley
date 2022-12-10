@@ -71,11 +71,22 @@ void odv_resource_picc_info(const struct ODVResourcePicc *picc)
     printf("[---------------------------------]\n");
 }
 
+void odv_resource_picc_extract(const struct ODVResourcePicc *picc, const char *filename, const char *output, unsigned int id)
+{
+    char suffix[256];
+
+    snprintf(suffix, sizeof (suffix) - 1, "%d", id);
+
+    odv_imagemap_extract(picc->imgmap, filename, output, suffix);
+}
+
 void odv_resource_clean_picc(struct ODVResourcePicc *picc)
 {
-    if (picc == NULL)
+    if (picc == NULL) {
         return;
-    if (picc->imgmap != NULL)
+    }
+    if (picc->imgmap != NULL) {
         odv_imagemap_clean(picc->imgmap);
+    }
     free(picc);
 }

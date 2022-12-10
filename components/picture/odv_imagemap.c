@@ -95,6 +95,20 @@ void odv_imagemap_info(const struct ODVImageMap *imgmap)
     printf("[-------------------------]\n");
 }
 
+void odv_imagemap_extract(const struct ODVImageMap *imgmap, const char *filename, const char *output, const char *suffix)
+{
+    char bmp_filepath[MAX_PATH];
+
+    for (unsigned int i = 0; i < imgmap->image_count; i++) {
+#ifdef WINDOWS
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s\\%s_%s_%04d.bmp", output, filename, suffix, i);
+#else
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s_%s_%04d.bmp", output, filename, suffix, i);
+#endif
+        odv_image_to_bmp(imgmap->images[i], bmp_filepath);
+    }
+}
+
 void odv_imagemap_clean(struct ODVImageMap *imgmap)
 {
     unsigned int i;

@@ -65,3 +65,45 @@ int is_regular_file(const char *filename)
 int is_folder_writable(const char* filename) {
     return (access(filename, W_OK) != 0);
 }
+
+int get_basename(char *path, char *filename, size_t filename_length)
+{
+    #ifdef WINDOWS
+        char fname[256];    // _MAX_FNAME
+        char ext[256];      // _MAX_EXT
+        _splitpath_s(path, NULL, 0x00, NULL, 0x00, fname, sizeof (fname), ext, sizeof (ext));
+        snprintf(filename, filename_length, "%s%s", fname, ext);
+    #else
+        char *fname_ext = basename(path);
+        snprintf(filename, filename_length, "%s", fname_ext);
+    #endif
+
+    return 0;
+}
+
+void unicode_to_utf8(wchar_t c, char *buf)
+{
+    // 7 bit Unicode encoded as plain ascii
+    if (c < (1 << 7)) {
+        *buf++ = (unsigned char)(c);
+    }
+    // 11 bit Unicode encoded in 2 UTF-8 bytes
+    else if (c < (1 << 11)) {
+        *buf++ = (unsigned char)((c >> 6) | 0xC0);
+        *buf++ = (unsigned char)((c & 0x3F) | 0x80);
+    }
+    // 16 bit Unicode encoded in 3 UTF-8 bytes
+    else if (c < (1 << 16)) {
+        *buf++ = (unsigned char)(((c >> 12)) | 0xE0);
+        *buf++ = (unsigned char)(((c >> 6) & 0x3F) | 0x80);
+        *buf++ = (unsigned char)((c & 0x3F) | 0x80);
+    }
+    // 21 bit Unicode encoded in 4 UTF-8 bytes
+    //else if (c < (1 << 21)) {
+    //    *buf++ = (unsigned char)(((c >> 18)) | 0xF0);
+    //    *buf++ = (unsigned char)(((c >> 12) & 0x3F) | 0x80);
+    //    *buf++ = (unsigned char)(((c >> 6) & 0x3F) | 0x80);
+    //    *buf++ = (unsigned char)((c & 0x3F) | 0x80);
+    //}
+    *buf = 0x00;
+}

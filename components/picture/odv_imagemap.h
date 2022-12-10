@@ -18,6 +18,7 @@ struct ODVImageMap *odv_imagemap_parse_one(struct ODVFile *file);
 int odv_imagemap_radd(struct ODVImageMap *imgmap, struct ODVFile *file);
 int odv_imagemap_add(struct ODVImageMap *imgmap, struct ODVImage *img);
 void odv_imagemap_info(const struct ODVImageMap *imgmap);
+void odv_imagemap_extract(const struct ODVImageMap *imgmap, const char *filename, const char *output, const char *suffix);
 void odv_imagemap_clean(struct ODVImageMap *imgmap);
 
 #endif /* OPENDV_IMAGE_MAP_H */

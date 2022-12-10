@@ -2,6 +2,7 @@
 #define OPENDV_UTILS_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
@@ -25,6 +26,7 @@
     #define access _access
     #define snprintf _snprintf
 #else
+    #include <libgen.h>
     #include <unistd.h>
     #define MAX_PATH FILENAME_MAX
 #endif
@@ -75,5 +77,7 @@ int arg_longf(const char *argv, const char *arg_name, size_t *pos_argv);
 int file_exists(const char *filename);
 int is_regular_file(const char *filename);
 int is_folder_writable(const char* filename);
+int get_basename(char *path, char *filename, size_t filename_length);
+void unicode_to_utf8(wchar_t c, char *buf);
 
 #endif /* OPENDV_UTILS_H */

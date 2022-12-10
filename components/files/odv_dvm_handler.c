@@ -36,11 +36,14 @@ void odv_dvm_info(const struct ODVDvm *dvm)
 
 void odv_dvm_close(struct ODVDvm *dvm)
 {
-    if (dvm == NULL)
+    if (dvm == NULL) {
         return;
-    if (dvm->file != NULL)
+    }
+    if (dvm->file != NULL) {
         odv_file_close(dvm->file);
-    if (dvm->imgmap != NULL)
+    }
+    if (dvm->imgmap != NULL) {
         odv_imagemap_clean(dvm->imgmap);
+    }
     free(dvm);
 }

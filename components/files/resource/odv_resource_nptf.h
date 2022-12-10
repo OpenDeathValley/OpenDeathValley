@@ -16,6 +16,7 @@ struct ODVResourceNptf
 
 void *odv_resource_parse_nptf(struct ODVResourceFile *rfile);
 void odv_resource_nptf_info(const struct ODVResourceNptf *nptf);
+void odv_resource_nptf_extract(const struct ODVResourceNptf *picc, const char *filename, const char *output, unsigned int id);
 void odv_resource_clean_nptf(struct ODVResourceNptf *nptf);
 
 #endif /* OPENDV_RESOURCE_NPTF_H */

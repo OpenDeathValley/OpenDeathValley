@@ -15,6 +15,7 @@ struct ODVResourceRdo
 
 void *odv_resource_parse_rdo(struct ODVResourceFile *rfile);
 void odv_resource_rdo_info(const struct ODVResourceRdo *rdo);
+void odv_resource_rdo_extract(const struct ODVResourceRdo *picc, const char *filename, const char *output, unsigned int id);
 void odv_resource_clean_rdo(struct ODVResourceRdo *rdo);
 
 #endif /* OPENDV_RESOURCE_RDO_H */
