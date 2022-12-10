@@ -24,12 +24,9 @@ struct ODVResourceEntry *odv_resource_parse_entry(struct ODVResourceFile *rfile)
 
 void odv_resource_close(struct ODVResourceFile *rfile);
 
-int odv_resource_get_type_index(struct ODVResourceFile *rfile, unsigned int index);
-
 /* INFO / DBG */
 
 void odv_resource_info(const struct ODVResourceFile *rfile);
-/* void odv_resource_headerinfo(const struct ODVResourceHeader *re);
-void odv_resourcetype_headerinfo(const struct ODVResourceTypeHeader *re); */
+void odv_resource_extract_entry(const struct ODVResourceEntry *rentry, const char *filename, const char *output);
 
 #endif /* OPENDV_RESOURCE_HANDLER_H */

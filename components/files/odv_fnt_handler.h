@@ -13,10 +13,10 @@
 struct ODVFntChar
 {
     unsigned short value;
-    unsigned int y_coord;
+    unsigned int coordinate_y;
     unsigned int width;
-    unsigned int unk_dword_00;
-    unsigned int unk_dword_01;
+    unsigned int pre_spacing;
+    unsigned int post_spacing;
 };
 #pragma pack(pop)
 
@@ -26,9 +26,8 @@ struct ODVFntHeader
     char signature[6];
     unsigned int version;
     char font_name[36];
-    unsigned short type;
-    unsigned short unk_word_00;
-    unsigned int unk_dword_01;  // HEIGHT ?
+    unsigned int type;
+    unsigned int height;
     unsigned int unk_dword_02;  // Width rectangle letter
     unsigned int unk_dword_03;  // Maximum width letter
     unsigned int nb_entry;

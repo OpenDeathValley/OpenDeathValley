@@ -15,6 +15,7 @@ struct ODVResourceTogl
 
 void *odv_resource_parse_togl(struct ODVResourceFile *rfile);
 void odv_resource_togl_info(const struct ODVResourceTogl *togl);
+void odv_resource_togl_extract(const struct ODVResourceTogl *picc, const char *filename, const char *output, unsigned int id);
 void odv_resource_clean_togl(struct ODVResourceTogl *togl);
 
 #endif /* OPENDV_RESOURCE_TOGL_H */

@@ -151,20 +151,23 @@ int odv_image_to_bmp(struct ODVImage *img, const char *bmp_filename)
 {
     struct BMPHeader bmp_header;
     struct BMPInfoHeader bmp_info_header;
-    unsigned int paddedRowSize = 0;
+    unsigned int alignedwidth = 0;
     FILE *outputFile = NULL;
     unsigned char color[3];
 
-
     outputFile = fopen(bmp_filename, "wb");
-    paddedRowSize = align4(img->width);
+    if (outputFile == NULL) {
+        fprintf(stderr, "fopen failed for %s\n", bmp_filename);
+        return 1;
+    }
+    alignedwidth = align4(img->width);
     bmp_header.type = 0x4d42; // "BM"
-    bmp_header.size = (paddedRowSize * img->height) + BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
+    bmp_header.size = (alignedwidth * img->height) + BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
     bmp_header.reserved = 0x00;
     bmp_header.offset = BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
     fwrite(&bmp_header, sizeof (struct BMPHeader), 1, outputFile);
     bmp_info_header.header_size = BMP_INFO_HEADER_SIZE;
-    bmp_info_header.width = img->width;
+    bmp_info_header.width = alignedwidth;
     bmp_info_header.height = img->height;
     bmp_info_header.num_planes = 0x01;
     bmp_info_header.bits_per_pixel = 24;
@@ -183,6 +186,12 @@ int odv_image_to_bmp(struct ODVImage *img, const char *bmp_filename)
             color[0] = odv_image_get_b(pixel);
             fwrite(&color, sizeof (unsigned char), 3, outputFile);
         }
+        for (unsigned int j = 0; j < (alignedwidth - img->width); j++) {
+            color[0] = 0;
+            color[1] = 0xFF;
+            color[2] = 0;
+            fwrite(&color, sizeof (unsigned char), 3, outputFile);
+        }
     }
 
     fclose(outputFile);
@@ -194,16 +203,20 @@ int odv_image_to_bmp_ex(struct ODVImage *img, const char *bmp_filename, unsigned
 {
     struct BMPHeader bmp_header;
     struct BMPInfoHeader bmp_info_header;
-    unsigned int paddedRowSize = 0;
+    unsigned int alignedwidth = 0;
     FILE *outputFile = NULL;
     unsigned char color[3];
 
     outputFile = fopen(bmp_filename, "wb");
+    if (outputFile == NULL) {
+        fprintf(stderr, "fopen failed for %s\n", bmp_filename);
+        return 1;
+    }
     // TODO it's already aligned :/
-    paddedRowSize = align4(width);
-    width = paddedRowSize;
+    alignedwidth = align4(width);
+    width = alignedwidth;
     bmp_header.type = 0x4d42; // "BM"
-    bmp_header.size = (paddedRowSize * height) + BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
+    bmp_header.size = (alignedwidth * height) + BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
     bmp_header.reserved = 0x00;
     bmp_header.offset = BMP_HEADER_SIZE + BMP_INFO_HEADER_SIZE;
     fwrite(&bmp_header, sizeof (struct BMPHeader), 1, outputFile);

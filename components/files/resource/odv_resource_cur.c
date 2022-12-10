@@ -77,6 +77,15 @@ void odv_resource_cur_info(const struct ODVResourceCur *cur)
     printf("[---------------------------------]\n");
 }
 
+void odv_resource_cur_extract(const struct ODVResourceCur *picc, const char *filename, const char *output, unsigned int id)
+{
+    char suffix[256];
+
+    snprintf(suffix, sizeof (suffix) - 1, "%d", id);
+
+    odv_imagemap_extract(picc->imgmap, filename, output, suffix);
+}
+
 void odv_resource_clean_cur(struct ODVResourceCur *cur)
 {
     if (cur == NULL)

@@ -90,34 +90,55 @@ int odv_fnt_parse_header(struct ODVFnt *fnt)
 
 void odv_fnt_info(const struct ODVFnt *fnt)
 {
-    if (fnt == NULL)
+#ifdef WINDOWS
+    UINT cocp = 0;
+
+    cocp = GetConsoleOutputCP();
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+    if (fnt == NULL) {
         return;
+    }
     printf("[- ODV FNT information -]\n");
     printf("version         = 0x%08X\n", fnt->header.version);
     printf("font name       = %s\n", fnt->header.font_name);
-    printf("type            = 0x%04X\n", fnt->header.type);
-    printf("unk_word_00     = 0x%04X\n", fnt->header.unk_word_00);
-    printf("unk_dword_01    = 0x%08X\n", fnt->header.unk_dword_01);
+    printf("type            = 0x%08X\n", fnt->header.type);
+    printf("height          = 0x%08X\n", fnt->header.height);
     printf("unk_dword_02    = 0x%08X\n", fnt->header.unk_dword_02);
     printf("unk_dword_03    = 0x%08X\n", fnt->header.unk_dword_03);
     printf("nb_entry        = 0x%08X\n", fnt->header.nb_entry);
     if (fnt->header.version >= 0x200) {
         printf("unk_dword_00    = 0x%08X\n", fnt->unk_dword_00);
     }
+    for (unsigned int i = 0; i < fnt->header.nb_entry; i++) {
+        char buf[5];
+        unicode_to_utf8(fnt->char_entries[i]->value, buf);
+        printf("value           : %s (0x%04X)\n", buf, fnt->char_entries[i]->value);
+        printf("coordinate_y    : 0x%08X\n", fnt->char_entries[i]->coordinate_y);
+        printf("width           : 0x%08X\n", fnt->char_entries[i]->width);
+        printf("pre_spacing     : 0x%08X\n", fnt->char_entries[i]->pre_spacing);
+        printf("post_spacing    : 0x%08X\n", fnt->char_entries[i]->post_spacing);
+        printf("---------\n");
+    }
     if (fnt->imgmap != NULL) {
         odv_imagemap_info(fnt->imgmap);
     }
     printf("[---------------------------------]\n");
+#ifdef WINDOWS
+    SetConsoleOutputCP(cocp);
+#endif
 }
 
 void odv_fnt_close(struct ODVFnt *fnt)
 {
     unsigned int i;
 
-    if (fnt == NULL)
+    if (fnt == NULL) {
         return;
-    if (fnt->file != NULL)
+    }
+    if (fnt->file != NULL) {
         odv_file_close(fnt->file);
+    }
     if (fnt->char_entries != NULL) {
         for (i = 0; i < fnt->header.nb_entry; i++) {
             if (fnt->char_entries[i] != NULL) {
@@ -127,7 +148,8 @@ void odv_fnt_close(struct ODVFnt *fnt)
         }
         free(fnt->char_entries);
     }
-    if (fnt->imgmap != NULL)
+    if (fnt->imgmap != NULL) {
         odv_imagemap_clean(fnt->imgmap);
+    }
     free(fnt);
 }

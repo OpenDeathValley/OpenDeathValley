@@ -53,6 +53,15 @@ void odv_resource_bttn_info(const struct ODVResourceBttn *bttn)
     printf("[---------------------------------]\n");
 }
 
+void odv_resource_bttn_extract(const struct ODVResourceBttn *picc, const char *filename, const char *output, unsigned int id)
+{
+    char suffix[256];
+
+    snprintf(suffix, sizeof (suffix) - 1, "%d", id);
+
+    odv_imagemap_extract(picc->imgmap, filename, output, suffix);
+}
+
 void odv_resource_clean_bttn(struct ODVResourceBttn *bttn)
 {
     if (bttn == NULL)

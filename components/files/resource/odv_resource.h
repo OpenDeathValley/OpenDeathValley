@@ -17,7 +17,7 @@
 struct ODVResourceEntry
 {
     unsigned int signature;
-    unsigned int index;
+    unsigned int id;
     void *data;
 };
 
@@ -28,7 +28,7 @@ struct ODVResourceFile
     /* HEADER */
     unsigned int signature;
     unsigned int version;
-    int nbtypeentry;
+    unsigned int nb_type_entry;
 
     struct ODVResourceEntry **entries;
 };

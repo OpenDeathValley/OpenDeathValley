@@ -18,6 +18,7 @@ struct ODVResourceCur
 
 void *odv_resource_parse_cur(struct ODVResourceFile *rfile);
 void odv_resource_cur_info(const struct ODVResourceCur *cur);
+void odv_resource_cur_extract(const struct ODVResourceCur *picc, const char *filename, const char *output, unsigned int id);
 void odv_resource_clean_cur(struct ODVResourceCur *cur);
 
 #endif /* OPENDV_RESOURCE_CUR_H */

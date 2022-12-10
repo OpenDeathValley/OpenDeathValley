@@ -53,6 +53,15 @@ void odv_resource_rdo_info(const struct ODVResourceRdo *rdo)
     printf("[---------------------------------]\n");
 }
 
+void odv_resource_rdo_extract(const struct ODVResourceRdo *picc, const char *filename, const char *output, unsigned int id)
+{
+    char suffix[256];
+
+    snprintf(suffix, sizeof (suffix) - 1, "%d", id);
+
+    odv_imagemap_extract(picc->imgmap, filename, output, suffix);
+}
+
 void odv_resource_clean_rdo(struct ODVResourceRdo *rdo)
 {
     if (rdo == NULL)

@@ -36,11 +36,14 @@ void odv_sxt_info(const struct ODVSxt *sxt)
 
 void odv_sxt_close(struct ODVSxt *sxt)
 {
-    if (sxt == NULL)
+    if (sxt == NULL) {
         return;
-    if (sxt->file != NULL)
+    }
+    if (sxt->file != NULL) {
         odv_file_close(sxt->file);
-    if (sxt->imgmap != NULL)
+    }
+    if (sxt->imgmap != NULL) {
         odv_imagemap_clean(sxt->imgmap);
+    }
     free(sxt);
 }

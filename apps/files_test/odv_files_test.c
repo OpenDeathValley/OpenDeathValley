@@ -18,9 +18,20 @@ void odv_test_resource(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_resource_open = %s\n", filetest->filename);
     rfile = odv_resource_open(filetest->filename);
-    if (rfile == NULL)
+    if (rfile == NULL) {
         return;
-    odv_resource_info(rfile);
+    }
+    if (filetest->info) {
+        odv_resource_info(rfile);
+    }
+    if (filetest->extract) {
+        char filename[256];
+
+        get_basename(filetest->filename, filename, 256);
+        for (unsigned int i = 0; i < rfile->nb_type_entry; i++) {
+            odv_resource_extract_entry(rfile->entries[i], filename, filetest->output);
+        }
+    }
     odv_resource_close(rfile);
 }
 
@@ -32,17 +43,21 @@ void odv_test_script(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_scb_open = %s\n", filetest->filename);
     sfile = odv_scb_open(filetest->filename);
-    if (sfile == NULL)
+    if (sfile == NULL) {
         return;
+    }
     class = odv_scb_get_class_byname(sfile, "__1___Tir_au_co5440da0");
-    if (class == NULL)
+    if (class == NULL) {
         fprintf(stderr, "[-] Can't find class \"__1___Tir_au_co5440da0\"\n");
+    }
     else {
         func = odv_scb_get_function_byname(class, "EnterZone");
         if (func == NULL)
             fprintf(stderr, "[-] Can't find function \"EnterZone\"\n");
     }
-    odv_scb_info(sfile);
+    if (filetest->info) {
+        odv_scb_info(sfile);
+    }
     odv_scb_close(sfile);
 }
 
@@ -52,9 +67,12 @@ void odv_test_dvd(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_test_dvd = %s\n", filetest->filename);
     dfile = odv_dvd_open(filetest->filename);
-    if (dfile == NULL)
+    if (dfile == NULL) {
         return;
-    odv_dvd_info(dfile);
+    }
+    if (filetest->info) {
+        odv_dvd_info(dfile);
+    }
     odv_dvd_close(dfile);
 }
 
@@ -65,8 +83,9 @@ void odv_test_fxg(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_scb_open = %s\n", filetest->filename);
     sfile = odv_fxg_open(filetest->filename);
-    if (sfile == NULL)
+    if (sfile == NULL) {
         return;
+    }
     odv_fxg_close(sfile);
 }
 
@@ -76,9 +95,26 @@ void odv_test_map(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_map_open = %s\n", filetest->filename);
     mfile = odv_map_open(filetest->filename);
-    if (mfile == NULL)
+    if (mfile == NULL) {
         return;
-    odv_map_info(mfile);
+    }
+    if (filetest->info) {
+        odv_map_info(mfile);
+    }
+    if (filetest->extract) {
+        char filename[256];
+        char bmp_filepath[MAX_PATH];
+
+        get_basename(filetest->filename, filename, 256);
+#ifdef WINDOWS
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s\\%s.bmp", filetest->output, filename);
+#else
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s.bmp", filetest->output, filename);
+#endif
+        if (mfile->imgmap->image_count == 1) {
+            odv_image_to_bmp(mfile->imgmap->images[0], bmp_filepath);
+        }
+    }
     odv_map_close(mfile);
 }
 
@@ -88,9 +124,26 @@ void odv_test_dvm(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_dvm_open = %s\n", filetest->filename);
     dvm = odv_dvm_open(filetest->filename);
-    if (dvm == NULL)
+    if (dvm == NULL) {
         return;
-    odv_dvm_info(dvm);
+    }
+    if (filetest->info) {
+        odv_dvm_info(dvm);
+    }
+    if (filetest->extract) {
+        char filename[256];
+        char bmp_filepath[MAX_PATH];
+
+        get_basename(filetest->filename, filename, 256);
+#ifdef WINDOWS
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s\\%s.bmp", filetest->output, filename);
+#else
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s.bmp", filetest->output, filename);
+#endif
+        if (dvm->imgmap->image_count == 1) {
+            odv_image_to_bmp(dvm->imgmap->images[0], bmp_filepath);
+        }
+    }
     odv_dvm_close(dvm);
 }
 
@@ -100,9 +153,26 @@ void odv_test_sxt(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_sxt_open = %s\n", filetest->filename);
     sxt = odv_sxt_open(filetest->filename);
-    if (sxt == NULL)
+    if (sxt == NULL) {
         return;
-    odv_sxt_info(sxt);
+    }
+    if (filetest->info) {
+        odv_sxt_info(sxt);
+    }
+    if (filetest->extract) {
+        char filename[256];
+        char bmp_filepath[MAX_PATH];
+
+        get_basename(filetest->filename, filename, 256);
+#ifdef WINDOWS
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s\\%s.bmp", filetest->output, filename);
+#else
+        snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s.bmp", filetest->output, filename);
+#endif
+        if (sxt->imgmap->image_count == 1) {
+            odv_image_to_bmp(sxt->imgmap->images[0], bmp_filepath);
+        }
+    }
     odv_sxt_close(sxt);
 }
 
@@ -112,9 +182,27 @@ void odv_test_fnt(struct ODVFileTest *filetest)
 
     fprintf(stderr, "[+] odv_fnt_open = %s\n", filetest->filename);
     fnt = odv_fnt_open(filetest->filename);
-    if (fnt == NULL)
+    if (fnt == NULL) {
         return;
-    odv_fnt_info(fnt);
+    }
+    if (filetest->info) {
+        odv_fnt_info(fnt);
+    }
+    if (filetest->extract) {
+        char filename[256];
+        char bmp_filepath[MAX_PATH];
+
+        get_basename(filetest->filename, filename, 256);
+
+        for (unsigned int i = 0; i < fnt->imgmap->image_count; i++) {
+#ifdef WINDOWS
+            snprintf(bmp_filepath, MAX_PATH - 1, "%s\\%s_%04d.bmp", filetest->output, filename, i);
+#else
+            snprintf(bmp_filepath, MAX_PATH - 1, "%s/%s_%04d.bmp", filetest->output, filename, i);
+#endif
+            odv_image_to_bmp(fnt->imgmap->images[i], bmp_filepath);
+        }
+    }
     odv_fnt_close(fnt);
 }
 
